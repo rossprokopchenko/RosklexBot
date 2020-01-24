@@ -23,7 +23,7 @@ public class Daily extends ListenerAdapter {
 
         message[0] = message[0].substring(1);
 
-        if(message[0].equalsIgnoreCase("daily")){
+        if (message[0].equalsIgnoreCase("daily")) {
             long lastDaily = Profile.getMemberDaily(member);
             Calendar now = Calendar.getInstance();
             Date date = new Date();
@@ -36,18 +36,18 @@ public class Daily extends ListenerAdapter {
             int dailyExp = 100 + Profile.getMemberLevel(member) * 7;
             int dailyCoins = 150 + Profile.getMemberLevel(member) * 10;
 
-            if(message.length == 2 && message[1].equalsIgnoreCase("help")){
+            if (message.length == 2 && message[1].equalsIgnoreCase("help")) {
                 eb.setTitle("\uD83D\uDD65 Daily Help");
                 eb.setDescription(" The daily reward grants you " + dailyExp + " exp and " + dailyCoins + " coins. " +
                         "Once you claim your daily, your next daily will be available at 12 AM Eastern Standard Time");
                 e.getChannel().sendMessage(eb.build()).queue();
                 return;
-            } else if(message.length > 1){
+            } else if (message.length > 1) {
                 e.getChannel().sendMessage("Too many arguments").queue();
                 return;
             }
 
-            if(dailyAvailable(member)){
+            if (dailyAvailable(member)) {
                 Calendar tomorrow = Calendar.getInstance();
 
                 tomorrow.set(Calendar.HOUR_OF_DAY, 0);
@@ -69,7 +69,7 @@ public class Daily extends ListenerAdapter {
 
                 long millisLeft = lastDaily - now.getTimeInMillis();
                 long hoursLeft = millisLeft / (60 * 60 * 1000);
-                long minutesLeft =  (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
+                long minutesLeft = (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
                 long secondsLeft = (millisLeft / 1000) % 60;
 
                 String hours = Long.toString(hoursLeft);
@@ -84,12 +84,12 @@ public class Daily extends ListenerAdapter {
         }
     }
 
-    public static boolean dailyAvailable(Member member){
+    public static boolean dailyAvailable(Member member) {
         long lastDaily = Profile.getMemberDaily(member);
 
         Calendar now = Calendar.getInstance();
 
-        if(lastDaily < now.getTimeInMillis())
+        if (lastDaily < now.getTimeInMillis())
             return true;
         else
             return false;

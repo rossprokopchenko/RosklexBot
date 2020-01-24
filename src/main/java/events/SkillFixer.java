@@ -41,19 +41,19 @@ public class SkillFixer extends ListenerAdapter {
         setSkill(member, totalAttack, totalDefence, totalSwiftness);
     }
 
-    public static int getTotalAttack(Member member){
+    public static int getTotalAttack(Member member) {
         return Integer.parseInt(Database.getDb().getColumn(member.getId(), "attack")) / Inventory.getAmuletMuliplier(member);
     }
 
-    public static int getTotalDefence(Member member){
+    public static int getTotalDefence(Member member) {
         return Integer.parseInt(Database.getDb().getColumn(member.getId(), "defence")) / Inventory.getAmuletMuliplier(member);
     }
 
-    public static int getTotalSwiftness(Member member){
+    public static int getTotalSwiftness(Member member) {
         return Integer.parseInt(Database.getDb().getColumn(member.getId(), "swiftness")) / Inventory.getAmuletMuliplier(member);
     }
 
-    private void setSkill(Member member, int attack, int defence, int swiftness){
+    private void setSkill(Member member, int attack, int defence, int swiftness) {
         Database.getDb().setColumn(member.getId(), "attack", "" + (attack * Inventory.getAmuletMuliplier(member)));
         Database.getDb().setColumn(member.getId(), "defence", "" + (defence * Inventory.getAmuletMuliplier(member)));
         Database.getDb().setColumn(member.getId(), "swiftness", "" + (swiftness * Inventory.getAmuletMuliplier(member)));

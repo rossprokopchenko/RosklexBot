@@ -1,12 +1,14 @@
 package sqlite;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
 
     private static Database db = new Database();
 
-    public void run(){
+    public void run() {
         //Database.getDb().dropTable();
         //Database.getDb().createNewTable();
 
@@ -47,12 +49,13 @@ public class Database {
         Database.getDb().selectAll();
     }
 
-    public static Database getDb(){
+    public static Database getDb() {
         return db;
     }
 
     /**
      * Connect to a sample database
+     *
      * @return
      */
     private Connection connect() {
@@ -67,13 +70,12 @@ public class Database {
         return conn;
     }
 
-    public void newUser(String id, String name){
+    public void newUser(String id, String name) {
         // SQLite connection string
         String url = "jdbc:sqlite:scores.db";
-        String sql = "INSERT INTO scores ("+ tableColumns("scores") +") VALUES(" + tableQuestions("scores") + ")";
+        String sql = "INSERT INTO scores (" + tableColumns("scores") + ") VALUES(" + tableQuestions("scores") + ")";
 
         String[] columns = tableColumns("scores").split(",");
-
 
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -86,7 +88,7 @@ public class Database {
 
             // defaults everything past 3rd column to 0
 
-            for(int i = 4; i <= columns.length; i++){
+            for (int i = 4; i <= columns.length; i++) {
                 pstmt.setInt(i, 0);
             }
 
@@ -101,7 +103,6 @@ public class Database {
 
     /**
      * Create a new table in the test database
-     *
      */
     public static void createNewTable() {
         // SQLite connection string
@@ -142,14 +143,34 @@ public class Database {
         }
     }
 
-    private String tableColumns(String table){
+    public String[] getTop(String column, String order){
+        String sql = "SELECT id, " + column + " FROM scores ORDER BY " + column + " " + order + " LIMIT 25";
+
+        List<String> top = new ArrayList<>();
+
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                top.add(rs.getString("id"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return top.toArray(new String[top.size()]);
+    }
+
+    private String tableColumns(String table) {
         String url = "jdbc:sqlite:scores.db";
         String sql = "SELECT * FROM " + table + ";";
         String columns = "";
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -157,27 +178,27 @@ public class Database {
             // The column count starts from 1
             for (int i = 1; i <= columnCount; i++) {
 
-                if(i == columnCount){
+                if (i == columnCount) {
                     columns += rsmd.getColumnName(i);
                 } else {
                     columns += rsmd.getColumnName(i) + ",";
                 }
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return columns;
     }
 
-    private String tableQuestions(String table){
+    private String tableQuestions(String table) {
         String url = "jdbc:sqlite:scores.db";
         String sql = "SELECT * FROM " + table + ";";
         String questions = "";
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -185,20 +206,20 @@ public class Database {
             // The column count starts from 1
             for (int i = 1; i <= columnCount; i++) {
 
-                if(i == columnCount){
+                if (i == columnCount) {
                     questions += "?";
                 } else {
                     questions += "?,";
                 }
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return questions;
     }
 
-    public static void dropTable(){
+    public static void dropTable() {
         // SQLite connection string
         String url = "jdbc:sqlite:scores.db";
 
@@ -216,22 +237,22 @@ public class Database {
         }
     }
 
-    public void selectAll(){
+    public void selectAll() {
         String sql = "SELECT * FROM scores";
 
         String s = tableColumns("scores");
         String[] columnArray = s.split(",");
 
         try (Connection conn = this.connect();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             // loop through the result set
             while (rs.next()) {
-                for(int i = 0; i < columnArray.length; i++){
-                    if(i == columnArray.length - 1)
+                for (int i = 0; i < columnArray.length; i++) {
+                    if (i == columnArray.length - 1)
                         System.out.print(rs.getString(columnArray[i]) + "\n");
-                     else
+                    else
                         System.out.print(rs.getString(columnArray[i]) + "\t");
                 }
             }
@@ -240,18 +261,18 @@ public class Database {
         }
     }
 
-    public String getColumn(String id, String column){
+    public String getColumn(String id, String column) {
 
         String sql = "SELECT " + column + " FROM scores WHERE id = ?";
 
         String value = "";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1,id);
+            pstmt.setString(1, id);
 
-            ResultSet rs  = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             // loop through the result set
             while (rs.next()) {
@@ -264,7 +285,7 @@ public class Database {
         return value;
     }
 
-    public void setColumn(String id, String column, String value){
+    public void setColumn(String id, String column, String value) {
         String url = "jdbc:sqlite:scores.db";
         String sql = "UPDATE scores SET " + column + " = '" + value + "' WHERE id = " + id + ";";
 
@@ -294,18 +315,18 @@ public class Database {
         }
     }
 
-    public boolean exists(String id){
+    public boolean exists(String id) {
         String sql = "SELECT id "
                 + "FROM scores WHERE id = ?";
 
         String idCol = "";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1,id);
+            pstmt.setString(1, id);
 
-            ResultSet rs  = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             // loop through the result set
             while (rs.next()) {
@@ -315,7 +336,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
 
-        if(idCol.equals(id))
+        if (idCol.equals(id))
             return true;
         else return false;
     }

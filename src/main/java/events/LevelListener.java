@@ -17,11 +17,11 @@ import java.util.Date;
 public class LevelListener extends ListenerAdapter {
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if(e.getMessage().getMember().getUser().isBot()) return;
+        if (e.getMessage().getMember().getUser().isBot()) return;
 
         String[] message = e.getMessage().getContentRaw().split(" ");
 
-        if(message[0].charAt(0) == Rosklex.PREFIX) {
+        if (message[0].charAt(0) == Rosklex.PREFIX) {
             message[0] = message[0].substring(1, message[0].length());
 
             Member member = e.getMessage().getMember();
@@ -42,7 +42,7 @@ public class LevelListener extends ListenerAdapter {
                 e.getChannel().sendMessage(member.getAsMention() + " leveled up to **level " + memberLevel + "**! Congratulations!").queue();
             }
 
-            if(message[0].equalsIgnoreCase("level")){
+            if (message[0].equalsIgnoreCase("level")) {
 
                 double progress = round(((double) memberExp / levelUp) * 100, 2);
 
@@ -50,7 +50,7 @@ public class LevelListener extends ListenerAdapter {
                 int whiteBoxes = (100 - (int) progress) / 5;
                 String xpBar = "";
 
-                for(int i = 0; i < boxes; i++){
+                for (int i = 0; i < boxes; i++) {
                     xpBar += "●";
                 }
 
@@ -61,23 +61,23 @@ public class LevelListener extends ListenerAdapter {
                 Date date = new Date();
                 EmbedBuilder eb = new EmbedBuilder();
 
-                if(message.length == 2 && message[1].equalsIgnoreCase("help")){
+                if (message.length == 2 && message[1].equalsIgnoreCase("help")) {
                     String[] totalExp = new String[41];
                     String levelString = "*Level 2-4* ▫ ";
 
-                    for(int i = 1; i < totalExp.length - 1; i++){
-                        totalExp[i] = "" + (50 * (int) Math.pow(i - 2, 2) + 150 * (i-2) + 300);
+                    for (int i = 1; i < totalExp.length - 1; i++) {
+                        totalExp[i] = "" + (50 * (int) Math.pow(i - 2, 2) + 150 * (i - 2) + 300);
 
                         double amount = Double.parseDouble(totalExp[i]);
                         DecimalFormat formatter = new DecimalFormat("#,###");
 
-                        if(i == totalExp.length - 2){
-                            levelString += "**" + (i+1) + "** (" + formatter.format(amount) + ")";
+                        if (i == totalExp.length - 2) {
+                            levelString += "**" + (i + 1) + "** (" + formatter.format(amount) + ")";
                         } else {
-                            levelString += "**" + (i+1) + "** (" + formatter.format(amount) + "), ";
+                            levelString += "**" + (i + 1) + "** (" + formatter.format(amount) + "), ";
 
-                            if((i+1) % 4 == 0){
-                                levelString += "\n*Level " + (i+2) + "-" + (i+5) + "* ▫ ";
+                            if ((i + 1) % 4 == 0) {
+                                levelString += "\n*Level " + (i + 2) + "-" + (i + 5) + "* ▫ ";
                             }
                         }
 
@@ -96,13 +96,13 @@ public class LevelListener extends ListenerAdapter {
 
                     e.getChannel().sendMessage(eb.build()).queue();
                     return;
-                } else if(message.length > 1){
+                } else if (message.length > 1) {
                     e.getChannel().sendMessage("Too many arguments").queue();
                     return;
 
                 }
 
-                eb.setTitle("You are " + progress + "% there on the way to **level " + (memberLevel+1) + "**!");
+                eb.setTitle("You are " + progress + "% there on the way to **level " + (memberLevel + 1) + "**!");
                 eb.setDescription("\uD83C\uDF1F Experience: " + memberExp + "/" + levelUp
                         + "\n\n[ " + xpBar + " ]");
                 eb.addField("", "*enter **level help** to see the level ladder*", false);

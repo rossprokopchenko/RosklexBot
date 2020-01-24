@@ -21,7 +21,7 @@ public class DungeonListener extends ListenerAdapter {
 
         int dungeonNotifier = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dNotifier"));
 
-        if(!Dungeon.inDungeon(member) && dungeonNotifier == 1){
+        if (!Dungeon.inDungeon(member) && dungeonNotifier == 1) {
             Date date = new Date();
             EmbedBuilder eb = new EmbedBuilder();
 

@@ -13,7 +13,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 
 public class Mine extends ListenerAdapter {
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e){
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         String[] message = e.getMessage().getContentRaw().split(" ");
         Member member = e.getMessage().getMember();
 
@@ -23,7 +23,7 @@ public class Mine extends ListenerAdapter {
 
         message[0] = message[0].substring(1);
 
-        if(message[0].equalsIgnoreCase("mine")){
+        if (message[0].equalsIgnoreCase("mine")) {
             int pickaxeDurability = Integer.parseInt(Database.getDb().getColumn(member.getId(), "pickaxe"));
 
             Date date = new Date();
@@ -32,7 +32,7 @@ public class Mine extends ListenerAdapter {
             eb.setColor(Color.CYAN);
             eb.setTimestamp(date.toInstant());
 
-            if(pickaxeDurability == 0){
+            if (pickaxeDurability == 0) {
                 eb.setAuthor("⛏ Mine Error");
                 eb.setDescription("You do not own a pickaxe. Please buy one from **shop**");
                 eb.setFooter("Mine Error", member.getUser().getAvatarUrl());
@@ -46,30 +46,30 @@ public class Mine extends ListenerAdapter {
             double rand = round((Math.random() * 100), 2);
 
             // common
-            if(rand <= 85){
+            if (rand <= 85) {
                 eb.setDescription("After some time in the mine, unfortunately you came back with some junk.");
 
                 int rand2 = (int) (Math.random() * 4);
 
-                if(rand2 == 0){
+                if (rand2 == 0) {
 
                     eb.addField("**Results**", "You found a gear ⚙ Ain'\t that dandy?", false);
                     int gearAmount = Integer.parseInt(Database.getDb().getColumn(member.getId(), "gear"));
                     Database.getDb().setColumn(member.getId(), "gear", "" + (gearAmount + 1));
 
-                } else if(rand2 == 1){
+                } else if (rand2 == 1) {
 
                     eb.addField("**Results**", "You found a wrench \uD83D\uDD27 Maybe try again?", false);
                     int wrenchAmount = Integer.parseInt(Database.getDb().getColumn(member.getId(), "wrench"));
                     Database.getDb().setColumn(member.getId(), "wrench", "" + (wrenchAmount + 1));
 
-                } else if(rand2 == 2){
+                } else if (rand2 == 2) {
 
                     eb.addField("**Results**", "You found a rusty key \uD83D\uDD11 Doubt it'd be useful for anything...", false);
                     int rustyKeyAmount = Integer.parseInt(Database.getDb().getColumn(member.getId(), "rustyKey"));
                     Database.getDb().setColumn(member.getId(), "rustyKey", "" + (rustyKeyAmount + 1));
 
-                } else if(rand2 == 3){
+                } else if (rand2 == 3) {
 
                     eb.addField("**Results**", "You found a battery \uD83D\uDD0B Must've been from some previous miner.", false);
                     int batteryAmount = Integer.parseInt(Database.getDb().getColumn(member.getId(), "battery"));
@@ -78,7 +78,7 @@ public class Mine extends ListenerAdapter {
                 }
 
                 // rare
-            } else if(rand > 85 && rand <= 97.5){
+            } else if (rand > 85 && rand <= 97.5) {
                 eb.setColor(Color.YELLOW);
                 eb.setDescription("You came across a rare item!");
 
@@ -87,14 +87,14 @@ public class Mine extends ListenerAdapter {
                 int expToGain = 5 + Profile.getMemberLevel(member);
                 Database.getDb().setColumn(member.getId(), "exp", "" + (Profile.getMemberExp(member) + expToGain));
 
-                if(rand2 == 0){
+                if (rand2 == 0) {
 
                     eb.addField("**Results**", "It's a small bag of coins \uD83D\uDCB0 Cash that in, it could be worth a fortune.\n" +
                             "You also gained " + (expToGain) + " experience.", false);
                     int moneyBagAmount = Integer.parseInt(Database.getDb().getColumn(member.getId(), "moneyBag"));
                     Database.getDb().setColumn(member.getId(), "moneyBag", "" + (moneyBagAmount + 1));
 
-                } else if(rand2 == 1){
+                } else if (rand2 == 1) {
 
                     eb.addField("**Results**", "It's a small bag of coins \uD83D\uDCB0 Who left that laying around?\n" +
                             "You also gained " + (expToGain) + " experience.", false);
@@ -103,7 +103,7 @@ public class Mine extends ListenerAdapter {
                 }
 
                 // extra ordinary
-            } else if(rand > 97.5 && rand <= 99.7){
+            } else if (rand > 97.5 && rand <= 99.7) {
                 eb.setColor(Color.GREEN);
                 eb.setDescription("You dug up an extra ordinary item!");
 
@@ -116,7 +116,7 @@ public class Mine extends ListenerAdapter {
                 Database.getDb().setColumn(member.getId(), "diamond", "" + (diamondAmount + 1));
 
                 // mythical
-            } else if(rand > 99.7 && rand <= 99.95){
+            } else if (rand > 99.7 && rand <= 99.95) {
 
                 int expToGain = 100 + (int) (Math.pow(2, Profile.getMemberLevel(member)));
                 Database.getDb().setColumn(member.getId(), "exp", "" + (Profile.getMemberExp(member) + expToGain));
@@ -126,20 +126,20 @@ public class Mine extends ListenerAdapter {
 
                 int rand2 = (int) (Math.random() * 3);
 
-                if(rand2 == 0){
+                if (rand2 == 0) {
 
                     eb.addField("**Results**", "A Mythical Knife \uD83D\uDD2A Only legends talked about these.\n" +
                             "You also gained " + (expToGain) + " experience.", false);
                     Database.getDb().setColumn(member.getId(), "mKnife", "" + (Inventory.getMythicalKnife(member) + 1));
 
-                } else if (rand2 == 1){
+                } else if (rand2 == 1) {
 
                     eb.addField("**Results**", "A Mythical Shield \uD83E\uDDFF No one will mess with you.\n" +
                             "You also gained " + (expToGain) + " experience.", false);
                     Database.getDb().setColumn(member.getId(), "mShield", "" + (Inventory.getMythicalShield(member) + 1));
 
 
-                } else if (rand2 == 2){
+                } else if (rand2 == 2) {
                     eb.addField("**Results**", "A Mythical Hourglass ⌛ This amulet let's you travel through time.\n" +
                             "You also gained " + (expToGain) + " experience.", false);
                     Database.getDb().setColumn(member.getId(), "hourglass", "" + (Inventory.getHourglass(member) + 1));
@@ -148,7 +148,7 @@ public class Mine extends ListenerAdapter {
                 }
 
                 // legendary
-            } else if(rand > 99.95 && rand <= 100){
+            } else if (rand > 99.95 && rand <= 100) {
                 eb.setColor(Color.BLACK);
                 e.getChannel().sendMessage("legendary").queue();
 
@@ -168,7 +168,7 @@ public class Mine extends ListenerAdapter {
 
             Database.getDb().setColumn(member.getId(), "pickaxe", "" + (pickaxeDurability - 1));
 
-            if((pickaxeDurability - 1) == 0){
+            if ((pickaxeDurability - 1) == 0) {
                 eb.addField("", "*At the last moment, your pickaxe shattered. Buy another one from the store.*", false);
             }
 

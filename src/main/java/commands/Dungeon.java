@@ -53,7 +53,7 @@ public class Dungeon extends ListenerAdapter {
 
         message[0] = message[0].substring(1);
 
-        if(message[0].equalsIgnoreCase("dungeon")){
+        if (message[0].equalsIgnoreCase("dungeon")) {
             Date date = new Date();
             EmbedBuilder eb = new EmbedBuilder();
 
@@ -62,17 +62,17 @@ public class Dungeon extends ListenerAdapter {
 
             eb.setTitle("⚔ Dungeon Help Prompt");
 
-            if(message.length == 1){
+            if (message.length == 1) {
                 eb.setTitle("⚔ Dungeon Help Menu");
 
                 // check if player already in dungeon
-                if(inDungeon(member)){
+                if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
                     long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
-                    long minutesLeft =  (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
+                    long minutesLeft = (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
                     long secondsLeft = (millisLeft / 1000) % 60;
 
                     String hours = Long.toString(hoursLeft);
@@ -90,17 +90,17 @@ public class Dungeon extends ListenerAdapter {
                 return;
             }
 
-            if(message[1].equalsIgnoreCase("enter") || message[1].equalsIgnoreCase("start")){
+            if (message[1].equalsIgnoreCase("enter") || message[1].equalsIgnoreCase("start")) {
                 Calendar dungeonTimer = Calendar.getInstance();
 
                 // check if player already in dungeon
-                if(inDungeon(member)){
+                if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
                     long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
-                    long minutesLeft =  (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
+                    long minutesLeft = (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
                     long secondsLeft = (millisLeft / 1000) % 60;
 
                     String hours = Long.toString(hoursLeft);
@@ -114,7 +114,7 @@ public class Dungeon extends ListenerAdapter {
                     return;
                 }
 
-                if(message.length == 2){
+                if (message.length == 2) {
                     eb.setTitle("⚔ Dungeon Help Prompt");
                     eb.setDescription("Improper use of command. Please use **dungeon help** for help.");
                     e.getChannel().sendMessage(eb.build()).queue();
@@ -127,7 +127,7 @@ public class Dungeon extends ListenerAdapter {
                 int easyMinutes = (30 - swiftness);
 
                 int normalHours = (120 - swiftness * 4) / 60;
-                int normalMinutes = (120 - swiftness * 4 ) - (60 * normalHours);
+                int normalMinutes = (120 - swiftness * 4) - (60 * normalHours);
 
                 int challengingHours = (360 - swiftness * 12) / 60;
                 int challengingMinutes = (360 - swiftness * 12) - (60 * challengingHours);
@@ -143,56 +143,56 @@ public class Dungeon extends ListenerAdapter {
                 String extremeLength = "";
                 String legendaryLength = "";
 
-                if(normalHours > 1){
+                if (normalHours > 1) {
                     normalLength += normalHours + " hours ";
-                } else if(normalHours == 1){
+                } else if (normalHours == 1) {
                     normalLength += normalHours + " hour ";
                 }
 
-                if(normalMinutes > 1){
+                if (normalMinutes > 1) {
                     normalLength += normalMinutes + " minutes";
-                } else if(normalMinutes == 1){
+                } else if (normalMinutes == 1) {
                     normalLength += normalMinutes + " minute";
                 }
 
-                if(challengingHours > 1){
+                if (challengingHours > 1) {
                     challengingLength += challengingHours + " hours ";
-                } else if(challengingHours == 1){
+                } else if (challengingHours == 1) {
                     challengingLength += challengingHours + " hour ";
                 }
 
-                if(challengingMinutes > 1){
+                if (challengingMinutes > 1) {
                     challengingLength += challengingMinutes + " minutes";
-                } else if(normalMinutes == 1){
+                } else if (normalMinutes == 1) {
                     challengingLength += challengingMinutes + " minute";
                 }
 
-                if(extremeHours > 1){
+                if (extremeHours > 1) {
                     extremeLength += extremeHours + " hours ";
-                } else if(normalMinutes == 1){
+                } else if (normalMinutes == 1) {
                     extremeLength += extremeHours + " hour ";
                 }
 
-                if(extremeMinutes > 1){
+                if (extremeMinutes > 1) {
                     extremeLength += extremeMinutes + " minutes";
-                } else if(normalMinutes == 1){
+                } else if (normalMinutes == 1) {
                     extremeLength += extremeMinutes + " minute";
                 }
 
-                if(legendaryHours > 1){
+                if (legendaryHours > 1) {
                     legendaryLength += legendaryHours + " hours ";
-                } else if(legendaryHours == 1){
+                } else if (legendaryHours == 1) {
                     legendaryLength += legendaryHours + " hour ";
                 }
 
-                if(legendaryMinutes > 1){
+                if (legendaryMinutes > 1) {
                     legendaryLength += legendaryMinutes + " minutes";
-                } else if(normalMinutes == 1){
+                } else if (normalMinutes == 1) {
                     legendaryLength += legendaryMinutes + " minute";
                 }
 
 
-                if(message[2].equalsIgnoreCase("easy")){
+                if (message[2].equalsIgnoreCase("easy")) {
 
                     dungeonTimer.add(Calendar.MINUTE, easyMinutes);
                     Database.getDb().setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
@@ -203,16 +203,16 @@ public class Dungeon extends ListenerAdapter {
                     eb.setDescription("You've entered the **Easy** dungeon! If your run is successful, you will be able" +
                             " to claim your rewards after **" + easyMinutes + " minutes**.");
 
-                } else if(message[2].equalsIgnoreCase("normal")){
+                } else if (message[2].equalsIgnoreCase("normal")) {
 
-                    if(Profile.getMemberAttack(member) < normalAttackReq){
+                    if (Profile.getMemberAttack(member) < normalAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
                         return;
                     }
 
-                    if(Profile.getMemberDefence(member) < normalDefenceReq){
+                    if (Profile.getMemberDefence(member) < normalDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
@@ -229,16 +229,16 @@ public class Dungeon extends ListenerAdapter {
                     eb.setDescription("You've entered the **Normal** dungeon! If your run is successful, you will be able" +
                             " to claim your rewards after **" + normalLength + "**.");
 
-                } else  if(message[2].equalsIgnoreCase("challenging")){
+                } else if (message[2].equalsIgnoreCase("challenging")) {
 
-                    if(Profile.getMemberAttack(member) < challengingAttackReq){
+                    if (Profile.getMemberAttack(member) < challengingAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
                         return;
                     }
 
-                    if(Profile.getMemberDefence(member) < challengingDefenceReq){
+                    if (Profile.getMemberDefence(member) < challengingDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
@@ -255,16 +255,16 @@ public class Dungeon extends ListenerAdapter {
                     eb.setDescription("You've entered the **Challenging** dungeon! If your run is successful, you will be able" +
                             " to claim your rewards after **" + challengingLength + "**.");
 
-                } else if(message[2].equalsIgnoreCase("extreme")){
+                } else if (message[2].equalsIgnoreCase("extreme")) {
 
-                    if(Profile.getMemberAttack(member) < extremeAttackReq){
+                    if (Profile.getMemberAttack(member) < extremeAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
                         return;
                     }
 
-                    if(Profile.getMemberDefence(member) < extremeDefenceReq){
+                    if (Profile.getMemberDefence(member) < extremeDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
@@ -281,16 +281,16 @@ public class Dungeon extends ListenerAdapter {
                     eb.setDescription("You've entered the **Extreme** dungeon! If your run is successful, you will be able" +
                             " to claim your rewards after **" + extremeLength + "**.");
 
-                } else if(message[2].equalsIgnoreCase("legendary")){
+                } else if (message[2].equalsIgnoreCase("legendary")) {
 
-                    if(Profile.getMemberAttack(member) < legendaryAttackReq){
+                    if (Profile.getMemberAttack(member) < legendaryAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
                         return;
                     }
 
-                    if(Profile.getMemberDefence(member) < legendaryDefenceReq){
+                    if (Profile.getMemberDefence(member) < legendaryDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         e.getChannel().sendMessage(eb.build()).queue();
@@ -313,17 +313,17 @@ public class Dungeon extends ListenerAdapter {
                 }
 
 
-            } else if(message[1].equalsIgnoreCase("help")){
+            } else if (message[1].equalsIgnoreCase("help")) {
                 eb.setTitle("⚔ Dungeon Help Menu");
 
                 // check if player already in dungeon
-                if(inDungeon(member)){
+                if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
                     long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
-                    long minutesLeft =  (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
+                    long minutesLeft = (millisLeft % (60 * 60 * 1000)) / (60 * 1000);
                     long secondsLeft = (millisLeft / 1000) % 60;
 
                     String hours = Long.toString(hoursLeft);
@@ -340,25 +340,25 @@ public class Dungeon extends ListenerAdapter {
 
                 e.getChannel().sendMessage(eb.build()).queue();
                 return;
-            } else if(message[1].equalsIgnoreCase("claim")){
+            } else if (message[1].equalsIgnoreCase("claim")) {
                 int notifier = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dNotifier"));
                 String diff = Database.getDb().getColumn(member.getId(), "dDiff");
 
                 eb.setTitle("⚔ Dungeon Reward Claim");
 
-                if(!inDungeon(member) && diff.equals("0")){
+                if (!inDungeon(member) && diff.equals("0")) {
                     eb.setDescription("You have nothing to claim. Enter another dungeon!");
                     e.getChannel().sendMessage(eb.build()).queue();
                     return;
                 }
 
-                if(!inDungeon(member)){
+                if (!inDungeon(member)) {
                     int expToAdd = 0;
                     int coinsToAdd = 0;
 
                     int dungeonCounter = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dCounter"));
 
-                    switch(diff){
+                    switch (diff) {
                         case "easy":
                             expToAdd = (int) (Math.random() * ((easyHigh - easyLow) + 1)) + easyLow;
                             coinsToAdd = easyCoins;
@@ -409,10 +409,10 @@ public class Dungeon extends ListenerAdapter {
                     eb.setDescription("Your dungeon run ends in " + hours + " hours, " +
                             minutes + " minutes and " + seconds + " seconds.");
                 }
-            } else if(message[1].equalsIgnoreCase("time")){
+            } else if (message[1].equalsIgnoreCase("time")) {
                 eb.setTitle("⚔ Dungeon Timer");
 
-                if(inDungeon(member)) {
+                if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
                     long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
 
@@ -439,7 +439,7 @@ public class Dungeon extends ListenerAdapter {
         }
     }
 
-    public String dungeonHelp(Member member){
+    public String dungeonHelp(Member member) {
         int swiftness = Profile.getMemberSwiftness(member);
 
         int easyMinutes = (30 - swiftness);
@@ -462,88 +462,88 @@ public class Dungeon extends ListenerAdapter {
         String extremeLength = "";
         String legendaryLength = "";
 
-        if(normalHours > 1){
+        if (normalHours > 1) {
             normalLength += normalHours + " hours ";
-        } else if(normalHours == 1){
+        } else if (normalHours == 1) {
             normalLength += normalHours + " hour ";
         }
 
-        if(normalMinutes > 1){
+        if (normalMinutes > 1) {
             normalLength += normalMinutes + " minutes";
-        } else if(normalMinutes == 1){
+        } else if (normalMinutes == 1) {
             normalLength += normalMinutes + " minute";
         }
 
-        if(challengingHours > 1){
+        if (challengingHours > 1) {
             challengingLength += challengingHours + " hours ";
-        } else if(challengingHours == 1){
+        } else if (challengingHours == 1) {
             challengingLength += challengingHours + " hour ";
         }
 
-        if(challengingMinutes > 1){
+        if (challengingMinutes > 1) {
             challengingLength += challengingMinutes + " minutes";
-        } else if(normalMinutes == 1){
+        } else if (normalMinutes == 1) {
             challengingLength += challengingMinutes + " minute";
         }
 
-        if(extremeHours > 1){
+        if (extremeHours > 1) {
             extremeLength += extremeHours + " hours ";
-        } else if(normalMinutes == 1){
+        } else if (normalMinutes == 1) {
             extremeLength += extremeHours + " hour ";
         }
 
-        if(extremeMinutes > 1){
+        if (extremeMinutes > 1) {
             extremeLength += extremeMinutes + " minutes";
-        } else if(normalMinutes == 1){
+        } else if (normalMinutes == 1) {
             extremeLength += extremeMinutes + " minute";
         }
 
-        if(legendaryHours > 1){
+        if (legendaryHours > 1) {
             legendaryLength += legendaryHours + " hours ";
-        } else if(legendaryHours == 1){
+        } else if (legendaryHours == 1) {
             legendaryLength += legendaryHours + " hour ";
         }
 
-        if(legendaryMinutes > 1){
+        if (legendaryMinutes > 1) {
             legendaryLength += legendaryMinutes + " minutes";
-        } else if(normalMinutes == 1){
+        } else if (normalMinutes == 1) {
             legendaryLength += legendaryMinutes + " minute";
         }
 
         String help = "\uD83D\uDFE9 **Easy** : pretty much no challenge, \"low risk low reward\"\n" +
                 "↳ *Attack Requirement* : " + easyAttackReq + "\n" +
                 "↳ *Defence Requirement* : " + easyDefenceReq + "\n" +
-                "↳ *Reward* : " + easyLow + " - " + easyHigh + " exp, " + easyCoins +" coins\n" +
-                "↳ *Time Length* : "+ easyLength + "\n" +
+                "↳ *Reward* : " + easyLow + " - " + easyHigh + " exp, " + easyCoins + " coins\n" +
+                "↳ *Time Length* : " + easyLength + "\n" +
                 "\uD83D\uDFE7 **Normal** : a casual run with decent rewards\n" +
                 "↳ *Attack Requirement* : " + normalAttackReq + "\n" +
                 "↳ *Defence Requirement* : " + normalDefenceReq + "\n" +
-                "↳ *Reward* : " + normalLow + " - " + normalHigh + " exp, " + normalCoins +" coins\n" +
+                "↳ *Reward* : " + normalLow + " - " + normalHigh + " exp, " + normalCoins + " coins\n" +
                 "↳ *Time Length* : " + normalLength + "\n" +
                 "\uD83D\uDFE5 **Challenging** : an all guns blazing challenge (unless you\'re OP)\n" +
                 "↳ *Attack Requirement* : " + challengingAttackReq + "\n" +
                 "↳ *Defence Requirement* : " + challengingDefenceReq + "\n" +
-                "↳ *Reward* : " + challengingLow + " - " + challengingHigh + " exp, " + challengingCoins +" coins\n" +
+                "↳ *Reward* : " + challengingLow + " - " + challengingHigh + " exp, " + challengingCoins + " coins\n" +
                 "↳ *Time Length* : " + challengingLength + "\n" +
                 "☢ **Extreme** : you're playing with fire and bad odds\n" +
                 "↳ *Attack Requirement* : " + extremeAttackReq + "\n" +
                 "↳ *Defence Requirement* : " + extremeDefenceReq + "\n" +
-                "↳ *Reward* : " + extremeLow + " - " + extremeHigh + " exp, " + extremeCoins +" coins\n" +
+                "↳ *Reward* : " + extremeLow + " - " + extremeHigh + " exp, " + extremeCoins + " coins\n" +
                 "↳ *Time Length* : " + extremeLength + "\n" +
                 "\uD83C\uDFF5 **Legendary** : only the bravest would enter this mode\n" +
                 "↳ *Attack Requirement* : " + legendaryAttackReq + "\n" +
                 "↳ *Defence Requirement* : " + legendaryDefenceReq + "\n" +
-                "↳ *Reward* : " + legendaryLow + " - " + legendaryHigh + " exp, " + legendaryCoins +" coins\n" +
+                "↳ *Reward* : " + legendaryLow + " - " + legendaryHigh + " exp, " + legendaryCoins + " coins\n" +
                 "↳ *Time Length* : " + legendaryLength + "\n";
 
         return help;
     }
 
-    public static boolean inDungeon(Member member){
+    public static boolean inDungeon(Member member) {
         Calendar now = Calendar.getInstance();
         long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
 
-        if(now.getTimeInMillis() <= dTime){
+        if (now.getTimeInMillis() <= dTime) {
             return true;
         } else {
             return false;

@@ -15,7 +15,7 @@ public class Config extends JSONObject {
         instance = this;
     }
 
-    public static Config getInstance(){
+    public static Config getInstance() {
         return instance;
     }
 }

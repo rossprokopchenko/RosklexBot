@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
 public class Admin extends ListenerAdapter {
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e){
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
 
 
         String[] message = e.getMessage().getContentRaw().split(" ");
@@ -20,18 +20,18 @@ public class Admin extends ListenerAdapter {
         message[0] = message[0].substring(1, message[0].length());
 
 
-        if(message[0].equalsIgnoreCase("set")){
-            if(!e.getMessage().getMember().getId().equals("212388900616798218")){
+        if (message[0].equalsIgnoreCase("set")) {
+            if (!e.getMessage().getMember().getId().equals("212388900616798218")) {
                 e.getChannel().sendMessage("no :)").queue();
                 return;
             }
 
-            Member mentionedMember =  e.getMessage().getMentionedMembers().get(0);
+            Member mentionedMember = e.getMessage().getMentionedMembers().get(0);
 
-            try{
+            try {
                 Database.getDb().setColumn(mentionedMember.getId(), message[2], message[3]);
                 e.getChannel().sendMessage("Set " + mentionedMember.getUser().getName() + "'s " + message[2] + " to " + message[3]).queue();
-            } catch(Exception err){
+            } catch (Exception err) {
                 e.getChannel().sendMessage("Something went wrong.").queue();
             }
         }

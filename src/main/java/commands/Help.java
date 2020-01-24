@@ -20,7 +20,7 @@ public class Help extends ListenerAdapter {
 
         message[0] = message[0].substring(1, message[0].length());
 
-        if(message[0].equalsIgnoreCase("help")){
+        if (message[0].equalsIgnoreCase("help")) {
             Date date = new Date();
 
 

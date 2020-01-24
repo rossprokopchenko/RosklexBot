@@ -2,7 +2,10 @@ package main;
 
 import commands.*;
 import config.Config;
-import events.*;
+import events.DungeonListener;
+import events.LevelListener;
+import events.NewUser;
+import events.SkillFixer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import sqlite.Database;
@@ -14,10 +17,11 @@ import static net.dv8tion.jda.api.entities.Activity.playing;
 
 public class Rosklex {
     public static final char PREFIX = '!';
-    public static void main(String[] args) throws Exception{
+
+    public static void main(String[] args) throws Exception {
         Config config = new Config(new File("botconfig.json"));
 
-        JDA jda = new JDABuilder(config.getString("token")).setActivity(listening(" !help commands")).build();
+        JDA jda = new JDABuilder(config.getString("token")).setActivity(listening(" !help for commands")).build();
 
         Database.getDb().run();
 
