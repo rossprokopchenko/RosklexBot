@@ -1,6 +1,7 @@
 package events;
 
 import commands.Dungeon;
+import main.Rosklex;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,7 +16,7 @@ public class DungeonListener extends ListenerAdapter {
         String[] message = e.getMessage().getContentRaw().split(" ");
         Member member = e.getMessage().getMember();
 
-        if (member.getUser().isBot()) {
+        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
             return;
         }
 

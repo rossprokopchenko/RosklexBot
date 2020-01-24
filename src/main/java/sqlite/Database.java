@@ -1,49 +1,60 @@
 package sqlite;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Database {
 
     private static Database db = new Database();
 
     public void run(){
-        //Database.getDb().dropTable();
-        //Database.getDb().createNewTable();
+        /*
+        Database.getDb().dropTable();
+        Database.getDb().createNewTable();
 
-        //Database.getDb().addColumn("exp", "0");
-        //Database.getDb().addColumn("coins", "0");
-        //Database.getDb().addColumn("lastDaily", "0");
-        //Database.getDb().addColumn("pickaxe", "0");
-        //Database.getDb().addColumn("stick", "0");
-        //Database.getDb().addColumn("hammer", "0");
-        //Database.getDb().addColumn("dagger", "0");
-        //Database.getDb().addColumn("gun", "0");
-        //Database.getDb().addColumn("attack", "0");
-        //Database.getDb().addColumn("defence", "0");
-        //Database.getDb().addColumn("swiftness", "0");
-        //Database.getDb().addColumn("dTime", "0");
-        //Database.getDb().addColumn("dDiff", "0");
-        //Database.getDb().addColumn("dNotifier", "0");
-        //Database.getDb().addColumn("dCounter", "0");
-        //Database.getDb().addColumn("gear", "0");
-        //Database.getDb().addColumn("wrench", "0");
-        //Database.getDb().addColumn("rustyKey", "0");
-        //Database.getDb().addColumn("battery", "0");
-        //Database.getDb().addColumn("moneyBag", "0");
-        //Database.getDb().addColumn("diamond", "0");
-        //Database.getDb().addColumn("mKnife", "0");
-        //Database.getDb().addColumn("legAmulet","0");
-        //Database.getDb().addColumn("amuletMult", "1");
-        //Database.getDb().addColumn("orb", "0");
-        //Database.getDb().addColumn("shield", "0");
-        //Database.getDb().addColumn("boots", "0");
-        //Database.getDb().addColumn("mShield", "0");
-        //Database.getDb().addColumn("hourglass", "0");
+
+        Database.getDb().addColumn("exp", "0");
+        Database.getDb().addColumn("coins", "0");
+        Database.getDb().addColumn("lastDaily", "0");
+        Database.getDb().addColumn("pickaxe", "0");
+        Database.getDb().addColumn("stick", "0");
+        Database.getDb().addColumn("hammer", "0");
+        Database.getDb().addColumn("dagger", "0");
+        Database.getDb().addColumn("gun", "0");
+        Database.getDb().addColumn("attack", "0");
+        Database.getDb().addColumn("defence", "0");
+        Database.getDb().addColumn("swiftness", "0");
+        Database.getDb().addColumn("dTime", "0");
+        Database.getDb().addColumn("dDiff", "0");
+        Database.getDb().addColumn("dNotifier", "0");
+        Database.getDb().addColumn("dCounter", "0");
+        Database.getDb().addColumn("gear", "0");
+        Database.getDb().addColumn("wrench", "0");
+        Database.getDb().addColumn("rustyKey", "0");
+        Database.getDb().addColumn("battery", "0");
+        Database.getDb().addColumn("moneyBag", "0");
+        Database.getDb().addColumn("diamond", "0");
+        Database.getDb().addColumn("mKnife", "0");
+        Database.getDb().addColumn("legAmulet","0");
+        Database.getDb().addColumn("amuletMult", "1");
+        Database.getDb().addColumn("orb", "0");
+        Database.getDb().addColumn("shield", "0");
+        Database.getDb().addColumn("boots", "0");
+        Database.getDb().addColumn("mShield", "0");
+        Database.getDb().addColumn("hourglass", "0");
+        Database.getDb().addColumn("rank", "0");
+         */
+
+
         //System.out.println(Database.getDb().tableColumns("tempOldTable"));
         //System.out.println(Database.getDb().tableColumns("scores"));
 
-        // REMEMBER TO MODIFY newUser() to set default values
         //Database.getDb().delete("499752045138411531");
+        //System.out.println(getTop("level").toString());
+
         Database.getDb().selectAll();
     }
 
@@ -67,13 +78,12 @@ public class Database {
         return conn;
     }
 
-    public void newUser(String id, String name){
+    public void newUser(String id, String name) {
         // SQLite connection string
         String url = "jdbc:sqlite:scores.db";
-        String sql = "INSERT INTO scores ("+ tableColumns("scores") +") VALUES(" + tableQuestions("scores") + ")";
+        String sql = "INSERT INTO scores (" + tableColumns("scores") + ") VALUES(" + tableQuestions("scores") + ")";
 
         String[] columns = tableColumns("scores").split(",");
-
 
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -86,12 +96,13 @@ public class Database {
 
             // defaults everything past 3rd column to 0
 
-            for(int i = 4; i <= columns.length; i++){
+            for (int i = 4; i <= columns.length; i++) {
                 pstmt.setInt(i, 0);
             }
 
             // amulet multiplier set to 1
             pstmt.setString(27, "1");
+            pstmt.setString(33, "" + getRows() + 1);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -140,6 +151,26 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public String[] getTop(String column, String order){
+        String sql = "SELECT id, " + column + " FROM scores ORDER BY " + column + " " + order + " LIMIT 25";
+
+        List<String> top = new ArrayList<>();
+
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                top.add(rs.getString("id"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return top.toArray(new String[top.size()]);
     }
 
     private String tableColumns(String table){
@@ -262,6 +293,26 @@ public class Database {
         }
 
         return value;
+    }
+
+    public int getRows(){
+        String sql = "SELECT id FROM scores";
+
+        int counter = 0;
+
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                counter++;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return counter;
     }
 
     public void setColumn(String id, String column, String value){

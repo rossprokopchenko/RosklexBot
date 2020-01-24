@@ -118,7 +118,7 @@ public class Mine extends ListenerAdapter {
                 // mythical
             } else if(rand > 99.7 && rand <= 99.95){
 
-                int expToGain = 100 + (int) (Math.pow(2, Profile.getMemberLevel(member)));
+                int expToGain = 500 + 50 * Profile.getMemberLevel(member);
                 Database.getDb().setColumn(member.getId(), "exp", "" + (Profile.getMemberExp(member) + expToGain));
 
                 eb.setColor(Color.MAGENTA);
@@ -154,7 +154,7 @@ public class Mine extends ListenerAdapter {
 
                 eb.setDescription("You found a **LEGENDARY** item!!");
 
-                int expToGain = 500 + (int) (Math.pow(2, Profile.getMemberLevel(member)));
+                int expToGain = 1000 + 100 * Profile.getMemberLevel(member);
                 Database.getDb().setColumn(member.getId(), "exp", "" + (Profile.getMemberExp(member) + expToGain));
 
                 eb.addField("**Results**", "You claimed A Legendary Amulet \uD83C\uDFC5 This will make you unstoppable in the long run.\n" +

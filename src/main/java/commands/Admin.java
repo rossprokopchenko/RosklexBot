@@ -8,8 +8,6 @@ import sqlite.Database;
 
 public class Admin extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent e){
-
-
         String[] message = e.getMessage().getContentRaw().split(" ");
         Member member = e.getMessage().getMember();
 
