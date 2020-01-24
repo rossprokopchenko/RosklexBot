@@ -36,7 +36,25 @@ public class Profile extends ListenerAdapter {
                 }
             }
 
-            eb.setAuthor("\uD83D\uDDA5 " + member.getUser().getName() + "'s Profile");
+            String rank = "" + getMemberRank(member);
+            if(getMemberRank(member) > 25){
+                rank = "Rank 25+";
+                eb.setAuthor("\uD83D\uDDA5 " + member.getUser().getName() + "'s Profile");
+            } else if(getMemberRank(member) == 1){
+                rank = "\uD83D\uDC79 **Rank 1**";
+                eb.setAuthor("\uD83D\uDC79 " + member.getUser().getName() + "'s Profile");
+            } else if(getMemberRank(member) == 2){
+                rank = "\uD83D\uDC80 *Rank 2*";
+                eb.setAuthor("\uD83D\uDC80 " + member.getUser().getName() + "'s Profile");
+            } else if(getMemberRank(member) == 3){
+                rank = "\uD83E\uDD49 *Rank 3*";
+                eb.setAuthor("\uD83E\uDD49 " + member.getUser().getName() + "'s Profile");
+            } else {
+                rank = "Rank " + getMemberRank(member);
+                eb.setAuthor("\uD83D\uDDA5 " + member.getUser().getName() + "'s Profile");
+            }
+
+
             eb.addField("**Bot Stats**",
                     "⏫ Level: **" + getMemberLevel(member)
                             + "**\n\uD83C\uDF1F Experience: **" + getMemberExp(member) + "**", true);
@@ -47,6 +65,7 @@ public class Profile extends ListenerAdapter {
                             "\n \uD83D\uDEE1 Defence: **" + getMemberDefence(member) + "**" +
                             "\n \uD83C\uDFC3\u200D Swiftness: **" + getMemberSwiftness(member) + "**" +
                             "\n *Total Dungeon Runs: " + getMemberDungeonRuns(member) + "*", false);
+            eb.addField("**Leaderboard Stats**", rank, false);
 
             if (Daily.dailyAvailable(member)) {
                 eb.addField("", "**Your daily is available!**", false);
@@ -89,6 +108,10 @@ public class Profile extends ListenerAdapter {
 
     public static int getMemberDungeonRuns(Member member) {
         return Integer.parseInt(Database.getDb().getColumn(member.getId(), "dCounter"));
+    }
+
+    public static int getMemberRank(Member member){
+        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "rank"));
     }
 
 }

@@ -2,60 +2,68 @@ package sqlite;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Database {
 
     private static Database db = new Database();
 
-    public void run() {
-        //Database.getDb().dropTable();
-        //Database.getDb().createNewTable();
+    public void run(){
+        /*
+        Database.getDb().dropTable();
+        Database.getDb().createNewTable();
 
-        //Database.getDb().addColumn("exp", "0");
-        //Database.getDb().addColumn("coins", "0");
-        //Database.getDb().addColumn("lastDaily", "0");
-        //Database.getDb().addColumn("pickaxe", "0");
-        //Database.getDb().addColumn("stick", "0");
-        //Database.getDb().addColumn("hammer", "0");
-        //Database.getDb().addColumn("dagger", "0");
-        //Database.getDb().addColumn("gun", "0");
-        //Database.getDb().addColumn("attack", "0");
-        //Database.getDb().addColumn("defence", "0");
-        //Database.getDb().addColumn("swiftness", "0");
-        //Database.getDb().addColumn("dTime", "0");
-        //Database.getDb().addColumn("dDiff", "0");
-        //Database.getDb().addColumn("dNotifier", "0");
-        //Database.getDb().addColumn("dCounter", "0");
-        //Database.getDb().addColumn("gear", "0");
-        //Database.getDb().addColumn("wrench", "0");
-        //Database.getDb().addColumn("rustyKey", "0");
-        //Database.getDb().addColumn("battery", "0");
-        //Database.getDb().addColumn("moneyBag", "0");
-        //Database.getDb().addColumn("diamond", "0");
-        //Database.getDb().addColumn("mKnife", "0");
-        //Database.getDb().addColumn("legAmulet","0");
-        //Database.getDb().addColumn("amuletMult", "1");
-        //Database.getDb().addColumn("orb", "0");
-        //Database.getDb().addColumn("shield", "0");
-        //Database.getDb().addColumn("boots", "0");
-        //Database.getDb().addColumn("mShield", "0");
-        //Database.getDb().addColumn("hourglass", "0");
+
+        Database.getDb().addColumn("exp", "0");
+        Database.getDb().addColumn("coins", "0");
+        Database.getDb().addColumn("lastDaily", "0");
+        Database.getDb().addColumn("pickaxe", "0");
+        Database.getDb().addColumn("stick", "0");
+        Database.getDb().addColumn("hammer", "0");
+        Database.getDb().addColumn("dagger", "0");
+        Database.getDb().addColumn("gun", "0");
+        Database.getDb().addColumn("attack", "0");
+        Database.getDb().addColumn("defence", "0");
+        Database.getDb().addColumn("swiftness", "0");
+        Database.getDb().addColumn("dTime", "0");
+        Database.getDb().addColumn("dDiff", "0");
+        Database.getDb().addColumn("dNotifier", "0");
+        Database.getDb().addColumn("dCounter", "0");
+        Database.getDb().addColumn("gear", "0");
+        Database.getDb().addColumn("wrench", "0");
+        Database.getDb().addColumn("rustyKey", "0");
+        Database.getDb().addColumn("battery", "0");
+        Database.getDb().addColumn("moneyBag", "0");
+        Database.getDb().addColumn("diamond", "0");
+        Database.getDb().addColumn("mKnife", "0");
+        Database.getDb().addColumn("legAmulet","0");
+        Database.getDb().addColumn("amuletMult", "1");
+        Database.getDb().addColumn("orb", "0");
+        Database.getDb().addColumn("shield", "0");
+        Database.getDb().addColumn("boots", "0");
+        Database.getDb().addColumn("mShield", "0");
+        Database.getDb().addColumn("hourglass", "0");
+        Database.getDb().addColumn("rank", "0");
+         */
+
+
         //System.out.println(Database.getDb().tableColumns("tempOldTable"));
         //System.out.println(Database.getDb().tableColumns("scores"));
 
-        // REMEMBER TO MODIFY newUser() to set default values
         //Database.getDb().delete("499752045138411531");
+        //System.out.println(getTop("level").toString());
+
         Database.getDb().selectAll();
     }
 
-    public static Database getDb() {
+    public static Database getDb(){
         return db;
     }
 
     /**
      * Connect to a sample database
-     *
      * @return
      */
     private Connection connect() {
@@ -94,6 +102,7 @@ public class Database {
 
             // amulet multiplier set to 1
             pstmt.setString(27, "1");
+            pstmt.setString(33, "" + getRows() + 1);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -103,6 +112,7 @@ public class Database {
 
     /**
      * Create a new table in the test database
+     *
      */
     public static void createNewTable() {
         // SQLite connection string
@@ -163,14 +173,14 @@ public class Database {
         return top.toArray(new String[top.size()]);
     }
 
-    private String tableColumns(String table) {
+    private String tableColumns(String table){
         String url = "jdbc:sqlite:scores.db";
         String sql = "SELECT * FROM " + table + ";";
         String columns = "";
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs    = stmt.executeQuery(sql)) {
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -178,27 +188,27 @@ public class Database {
             // The column count starts from 1
             for (int i = 1; i <= columnCount; i++) {
 
-                if (i == columnCount) {
+                if(i == columnCount){
                     columns += rsmd.getColumnName(i);
                 } else {
                     columns += rsmd.getColumnName(i) + ",";
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException e){
             System.out.println(e.getMessage());
         }
 
         return columns;
     }
 
-    private String tableQuestions(String table) {
+    private String tableQuestions(String table){
         String url = "jdbc:sqlite:scores.db";
         String sql = "SELECT * FROM " + table + ";";
         String questions = "";
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs    = stmt.executeQuery(sql)) {
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -206,20 +216,20 @@ public class Database {
             // The column count starts from 1
             for (int i = 1; i <= columnCount; i++) {
 
-                if (i == columnCount) {
+                if(i == columnCount){
                     questions += "?";
                 } else {
                     questions += "?,";
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException e){
             System.out.println(e.getMessage());
         }
 
         return questions;
     }
 
-    public static void dropTable() {
+    public static void dropTable(){
         // SQLite connection string
         String url = "jdbc:sqlite:scores.db";
 
@@ -237,22 +247,22 @@ public class Database {
         }
     }
 
-    public void selectAll() {
+    public void selectAll(){
         String sql = "SELECT * FROM scores";
 
         String s = tableColumns("scores");
         String[] columnArray = s.split(",");
 
         try (Connection conn = this.connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
 
             // loop through the result set
             while (rs.next()) {
-                for (int i = 0; i < columnArray.length; i++) {
-                    if (i == columnArray.length - 1)
+                for(int i = 0; i < columnArray.length; i++){
+                    if(i == columnArray.length - 1)
                         System.out.print(rs.getString(columnArray[i]) + "\n");
-                    else
+                     else
                         System.out.print(rs.getString(columnArray[i]) + "\t");
                 }
             }
@@ -261,18 +271,18 @@ public class Database {
         }
     }
 
-    public String getColumn(String id, String column) {
+    public String getColumn(String id, String column){
 
         String sql = "SELECT " + column + " FROM scores WHERE id = ?";
 
         String value = "";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, id);
+            pstmt.setString(1,id);
 
-            ResultSet rs = pstmt.executeQuery();
+            ResultSet rs  = pstmt.executeQuery();
 
             // loop through the result set
             while (rs.next()) {
@@ -285,7 +295,27 @@ public class Database {
         return value;
     }
 
-    public void setColumn(String id, String column, String value) {
+    public int getRows(){
+        String sql = "SELECT id FROM scores";
+
+        int counter = 0;
+
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                counter++;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return counter;
+    }
+
+    public void setColumn(String id, String column, String value){
         String url = "jdbc:sqlite:scores.db";
         String sql = "UPDATE scores SET " + column + " = '" + value + "' WHERE id = " + id + ";";
 
@@ -315,18 +345,18 @@ public class Database {
         }
     }
 
-    public boolean exists(String id) {
+    public boolean exists(String id){
         String sql = "SELECT id "
                 + "FROM scores WHERE id = ?";
 
         String idCol = "";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, id);
+            pstmt.setString(1,id);
 
-            ResultSet rs = pstmt.executeQuery();
+            ResultSet rs  = pstmt.executeQuery();
 
             // loop through the result set
             while (rs.next()) {
@@ -336,7 +366,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
 
-        if (idCol.equals(id))
+        if(idCol.equals(id))
             return true;
         else return false;
     }
