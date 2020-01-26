@@ -60,7 +60,7 @@ public class Store extends ListenerAdapter {
             Date date = new Date();
             EmbedBuilder eb = new EmbedBuilder();
 
-            eb.setColor(Color.CYAN);
+            eb.setColor(Color.GREEN);
             eb.setTimestamp(date.toInstant());
 
             eb.setTitle("\uD83D\uDECD Item Store");
@@ -306,7 +306,7 @@ public class Store extends ListenerAdapter {
 
                 }
 
-                int bagSell = (Profile.getMemberLevel(member) * 10) * bags + bagsPrice;
+                int bagSell = (Profile.getMemberLevel(member) * 5) * bags + bagsPrice;
 
                 eb.setTitle("\uD83D\uDECD Item Sold");
                 eb.setDescription(member.getUser().getName() + ", You sold **" + bags + "** bag(s) of coins for **" + bagSell + "** coins!");
@@ -325,7 +325,7 @@ public class Store extends ListenerAdapter {
 
                 }
 
-                int diamondSell = (Profile.getMemberLevel(member) * 5) * diamonds + diamondsPrice;
+                int diamondSell = (Profile.getMemberLevel(member) * 10) * diamonds + diamondsPrice;
 
                 eb.setTitle("\uD83D\uDECD Item Sold");
                 eb.setDescription(member.getUser().getName() + ", You sold **" + diamonds + "** diamond(s) for **" + diamondSell + "** coins!");

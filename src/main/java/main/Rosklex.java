@@ -2,10 +2,7 @@ package main;
 
 import commands.*;
 import config.Config;
-import events.DungeonListener;
-import events.LevelListener;
-import events.NewUser;
-import events.SkillFixer;
+import events.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import sqlite.Database;
@@ -28,7 +25,9 @@ public class Rosklex {
         jda.addEventListener(new NewUser());
 
         jda.addEventListener(new SkillFixer());
+        jda.addEventListener(new RankFixer());
 
+        jda.addEventListener(new Leaderboard());
         jda.addEventListener(new Admin());
         jda.addEventListener(new Help());
         jda.addEventListener(new Daily());
@@ -37,6 +36,7 @@ public class Rosklex {
         jda.addEventListener(new Store());
         jda.addEventListener(new Dungeon());
         jda.addEventListener(new Mine());
+        jda.addEventListener(new Info());
 
         jda.addEventListener(new DungeonListener());
         jda.addEventListener(new LevelListener());

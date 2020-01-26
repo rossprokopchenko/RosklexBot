@@ -45,9 +45,9 @@ public class Database {
         Database.getDb().addColumn("boots", "0");
         Database.getDb().addColumn("mShield", "0");
         Database.getDb().addColumn("hourglass", "0");
-        Database.getDb().addColumn("rank", "0");
-         */
 
+         */
+        //Database.getDb().addColumn("rank", "0");
 
         //System.out.println(Database.getDb().tableColumns("tempOldTable"));
         //System.out.println(Database.getDb().tableColumns("scores"));
@@ -102,7 +102,6 @@ public class Database {
 
             // amulet multiplier set to 1
             pstmt.setString(27, "1");
-            pstmt.setString(33, "" + getRows() + 1);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -156,7 +155,7 @@ public class Database {
     public String[] getTop(String column, String order){
         String sql = "SELECT id, " + column + " FROM scores ORDER BY " + column + " " + order + " LIMIT 25";
 
-        List<String> top = new ArrayList<>();
+        Map<String, String> top = new HashMap<>();
 
         try (Connection conn = this.connect();
              Statement stmt  = conn.createStatement();
@@ -164,13 +163,13 @@ public class Database {
 
             // loop through the result set
             while (rs.next()) {
-                top.add(rs.getString("id"));
+                top.put(rs.getString("id"), rs.getString(column));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return top.toArray(new String[top.size()]);
+        return top.keySet().toArray(new String[top.size()]);
     }
 
     private String tableColumns(String table){

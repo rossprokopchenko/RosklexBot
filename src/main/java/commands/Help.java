@@ -35,7 +35,9 @@ public class Help extends ListenerAdapter {
                             "**store** : access the item shop\n" +
                             "**dungeon help** : access the dungeon help menu\n" +
                             "**mine** : test your luck in the mine (you must own a pickaxe)\n" +
-                            "**sell** : sell your mine loot (ex. **sell mine all**)", false);
+                            "**sell** : sell your mine loot (ex. **sell mine all**)\n" +
+                            "**top** *[page 1-3]*: see the leaderboard of current registered users\n" +
+                            "**info** : all you have to know about the bot", false);
             eb.setTimestamp(date.toInstant());
 
             e.getChannel().sendMessage(eb.build()).queue();

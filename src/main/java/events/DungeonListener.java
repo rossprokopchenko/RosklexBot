@@ -20,6 +20,8 @@ public class DungeonListener extends ListenerAdapter {
             return;
         }
 
+        message[0] = message[0].substring(1, message[0].length());
+
         int dungeonNotifier = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dNotifier"));
 
         if (!Dungeon.inDungeon(member) && dungeonNotifier == 1) {

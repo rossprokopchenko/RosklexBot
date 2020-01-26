@@ -29,10 +29,16 @@ public class RankFixer extends ListenerAdapter {
         Map<String, Integer> totalExpTop = new HashMap<>();
 
         for(int i = 0; i < size; i++){
-            int level = Integer.parseInt(Database.getDb().getColumn(ids[i], "level")) - 3;
+            int level = Integer.parseInt(Database.getDb().getColumn(ids[i], "level"));
             int exp = Integer.parseInt(Database.getDb().getColumn(ids[i], "exp"));
-            totalExpTop.put(ids[i], (50 * (int) Math.pow(level, 2) + 150 * (level) + 300) + exp);
+            int totalExp = 0;
 
+            for(int ii = level; ii > 0; ii--){
+                totalExp += (50 * (int) Math.pow(ii - 3, 2) + 150 * (ii - 3) + 300);
+            }
+            totalExp += exp - 200;
+
+            totalExpTop.put(ids[i], totalExp);
         }
 
         Map<String, Integer> sorted = totalExpTop

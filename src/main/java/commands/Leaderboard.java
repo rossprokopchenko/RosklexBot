@@ -10,6 +10,7 @@ import sqlite.Database;
 import javax.annotation.Nonnull;
 import javax.xml.crypto.Data;
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,11 +34,37 @@ public class Leaderboard extends ListenerAdapter {
             Color silver = new Color(192,192,192);
             Color bronze = new Color(	205, 127, 50);
 
-            String[] ids = Database.getDb().getTop("rank", "ASC");
+            String[] ids = Database.getDb().getTop("rank", "DESC");
+
+
+            int size = ids.length;
+            Map<String, Integer> totalExpTop = new HashMap<>();
+
+            for(int i = 0; i < size; i++){
+                int level = Integer.parseInt(Database.getDb().getColumn(ids[i], "level"));
+                int exp = Integer.parseInt(Database.getDb().getColumn(ids[i], "exp"));
+                int totalExp = 0;
+
+                for(int ii = level; ii > 0; ii--){
+                    totalExp += (50 * (int) Math.pow(ii - 3, 2) + 150 * (ii - 3) + 300);
+                }
+                totalExp += exp - 200;
+
+                totalExpTop.put(ids[i], totalExp);
+            }
+
+            Map<String, Integer> sorted = totalExpTop
+                    .entrySet()
+                    .stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                            LinkedHashMap::new));
+
+            totalExpTop = sorted;
+            ids = totalExpTop.keySet().toArray(new String[size]);
 
             String leaderboard = "";
 
-            int size = ids.length;
             String[] names = new String[size];
             String[] levels = new String[size];
             String[] exps = new String[size];
@@ -49,7 +76,6 @@ public class Leaderboard extends ListenerAdapter {
                 exps[i] = Database.getDb().getColumn(ids[i], "exp");
                 dCounters[i] = Database.getDb().getColumn(ids[i], "dCounter");
             }
-
 
             // left off where the map is unsorted, need to store name and level in descending sort
 
@@ -72,17 +98,20 @@ public class Leaderboard extends ListenerAdapter {
             }
 
             for(int i = start; i < start + 5; i++){
+                double amount = Double.parseDouble("" + totalExpTop.get(ids[i]));
+                DecimalFormat formatter = new DecimalFormat("#,###");
+
                 if(i == 0){
-                    leaderboard += "**" + (i+1) + ". \uD83D\uDC79 " + names[i] + " - Level " + levels[i] + " Exp " + exps[i] + "**\n" +
+                    leaderboard += "**" + (i+1) + ". \uD83D\uDC79 " + names[i] + " - Level " + levels[i] + " - Total Exp: " + formatter.format(amount) + "**\n" +
                             "↳ *Total Dungeon Runs: " + dCounters[i] + "*\n\n";
                 } else if(i == 1){
-                    leaderboard += (i+1) + ". \uD83D\uDC80 " + names[i] + " - *Level " + levels[i] + " Exp " + exps[i] + "*\n" +
+                    leaderboard += (i+1) + ". \uD83D\uDC80 " + names[i] + " - *Level " + levels[i] + " - Total Exp: " + formatter.format(amount) + "*\n" +
                             "↳ *Total Dungeon Runs: " + dCounters[i] + "*\n\n";
                 } else if(i == 2){
-                    leaderboard += (i+1) + ". \uD83E\uDD49 " + names[i] + " - *Level " + levels[i] + " Exp " + exps[i] + "*\n" +
+                    leaderboard += (i+1) + ". \uD83E\uDD49 " + names[i] + " - *Level " + levels[i] + " - Total Exp: " + formatter.format(amount) + "*\n" +
                             "↳ *Total Dungeon Runs: " + dCounters[i] + "*\n\n";
                 } else {
-                    leaderboard += (i+1) + ". " + names[i] + " - *Level " + levels[i] + " Exp " + exps[i] + "*\n" +
+                    leaderboard += (i+1) + ". " + names[i] + " - *Level " + levels[i] + " - Total Exp: " + formatter.format(amount) + "*\n" +
                             "↳ *Total Dungeon Runs: " + dCounters[i] + "*\n\n";
                 }
             }

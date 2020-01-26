@@ -29,12 +29,12 @@ public class Daily extends ListenerAdapter {
             Date date = new Date();
 
             EmbedBuilder eb = new EmbedBuilder();
-            eb.setColor(Color.GREEN);
+            eb.setColor(Color.BLUE);
             eb.setTimestamp(date.toInstant());
             eb.setFooter("Daily Prompt", member.getUser().getAvatarUrl());
 
             int dailyExp = 100 + Profile.getMemberLevel(member) * 7;
-            int dailyCoins = 150 + Profile.getMemberLevel(member) * 10;
+            int dailyCoins = 150 + Profile.getMemberLevel(member) * 20;
 
             if (message.length == 2 && message[1].equalsIgnoreCase("help")) {
                 eb.setTitle("\uD83D\uDD65 Daily Help");

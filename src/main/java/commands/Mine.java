@@ -118,7 +118,7 @@ public class Mine extends ListenerAdapter {
                 // mythical
             } else if (rand > 99.7 && rand <= 99.95) {
 
-                int expToGain = 500 + 50 * Profile.getMemberLevel(member);
+                int expToGain = 200 + 10 * Profile.getMemberLevel(member);
                 Database.getDb().setColumn(member.getId(), "exp", "" + (Profile.getMemberExp(member) + expToGain));
 
                 eb.setColor(Color.MAGENTA);
