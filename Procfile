@@ -1,1 +1,1 @@
-web: java -cp target/classes/:target/dependency/* -Dserver.port=$PORT $JAVA_OPTS -jar target/rosklex-core-1.0.0.jar
+web java $JAVA_OPTS -jar target/roskflex-core-1.0.0 --port $PORT target/*.war JAVA_TOOL_OPTIONS -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8
