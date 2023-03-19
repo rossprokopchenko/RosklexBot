@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f736a9e1-3757-463b-b712-8ceb555c84e0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Procfile" beforeDir="false" afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/events/LevelListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/events/LevelListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/events/NewUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/events/NewUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/events/RosklexMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/events/RosklexMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/main/Rosklex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Rosklex.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,10 +56,13 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\IntelliJ code\RosklexBot\src\main\resources" />
     </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
   </component>
   <component name="RunManager">
-    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="main.Rosklex" />
+    <configuration name="Rosklex" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Rosklex" />
       <module name="core-java" />
       <method v="2">
         <option name="Make" enabled="true" />

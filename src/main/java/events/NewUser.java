@@ -1,6 +1,6 @@
 package events;
 
-import main.Rosklex;
+import Rosklex;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
