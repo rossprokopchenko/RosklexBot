@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f736a9e1-3757-463b-b712-8ceb555c84e0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Rosklex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/main/Rosklex.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/events/LevelListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/events/LevelListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/events/NewUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/events/NewUser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/events/RosklexMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/events/RosklexMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/main/Rosklex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Rosklex.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

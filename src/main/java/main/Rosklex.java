@@ -1,3 +1,5 @@
+package main;
+
 import commands.*;
 import config.Config;
 import events.*;
