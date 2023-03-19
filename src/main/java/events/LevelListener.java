@@ -4,7 +4,7 @@ import commands.Profile;
 import main.Rosklex;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -15,16 +15,18 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 public class LevelListener extends ListenerAdapter {
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if (e.getMessage().getMember().getUser().isBot()) return;
+        if (!isRosklexMessage) return;
 
-        String[] message = e.getMessage().getContentRaw().split(" ");
+        String[] message = event.getMessage().getContentRaw().split(" ");
 
         if (message[0].charAt(0) == Rosklex.PREFIX) {
             message[0] = message[0].substring(1, message[0].length());
 
-            Member member = e.getMessage().getMember();
+            Member member = event.getMessage().getMember();
             int memberExp = Profile.getMemberExp(member);
             int memberLevel = Profile.getMemberLevel(member);
 
@@ -39,7 +41,7 @@ public class LevelListener extends ListenerAdapter {
                 Database.getDb().setColumn(member.getId(), "level", "" + memberLevel);
                 Database.getDb().setColumn(member.getId(), "exp", "" + memberExp);
 
-                e.getChannel().sendMessage(member.getAsMention() + " leveled up to **level " + memberLevel + "**! Congratulations!").queue();
+                event.getChannel().sendMessage(member.getAsMention() + " leveled up to **level " + memberLevel + "**! Congratulations!").queue();
             }
 
             if (message[0].equalsIgnoreCase("level")) {
@@ -94,10 +96,10 @@ public class LevelListener extends ListenerAdapter {
                     eb.setTimestamp(date.toInstant());
                     eb.setFooter("Level Ladder", member.getUser().getAvatarUrl());
 
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 } else if (message.length > 1) {
-                    e.getChannel().sendMessage("Too many arguments").queue();
+                    event.getChannel().sendMessage("Too many arguments").queue();
                     return;
 
                 }
@@ -111,7 +113,7 @@ public class LevelListener extends ListenerAdapter {
                 eb.setTimestamp(date.toInstant());
                 eb.setFooter(member.getUser().getName() + "'s level stats", member.getUser().getAvatarUrl());
 
-                e.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
             }
         }
     }

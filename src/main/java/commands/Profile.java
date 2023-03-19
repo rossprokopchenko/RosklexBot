@@ -1,9 +1,9 @@
 package commands;
 
-import main.Rosklex;
+import events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -11,13 +11,14 @@ import java.awt.*;
 import java.util.Date;
 
 public class Profile extends ListenerAdapter {
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        if (!isRosklexMessage) return;
+
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         message[0] = message[0].substring(1, message[0].length());
 
@@ -30,7 +31,7 @@ public class Profile extends ListenerAdapter {
 
             if (message.length == 2) {
                 try {
-                    member = e.getMessage().getMentionedMembers().get(0);
+                    member = event.getMessage().getMentions().getMembers().get(0);
                 } catch (Exception ex) {
 
                 }
@@ -73,7 +74,7 @@ public class Profile extends ListenerAdapter {
 
             eb.setFooter(member.getUser().getName() + "'s profile", member.getUser().getAvatarUrl());
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
 
     }

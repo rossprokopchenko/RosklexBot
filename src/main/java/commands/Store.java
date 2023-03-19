@@ -1,9 +1,9 @@
 package commands;
 
-import main.Rosklex;
+import events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -40,18 +40,19 @@ public class Store extends ListenerAdapter {
     public static final int bagsPrice = 30;
     public static final int diamondsPrice = 300;
 
-    private final String ownedItem = ", you already own this item. YIKESS";
+    private final String ownedItem = ", you already own this item. YIKES";
     private final String noCoins = "You don\'t have enough coins, silly";
     private final String purchasedItem1 = ", congratulations on purchasing a ";
     private final String purchasedItem2 = "** coins has been deducted from your account.";
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        if (!isRosklexMessage) return;
+
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         message[0] = message[0].substring(1, message[0].length());
 
@@ -85,7 +86,7 @@ public class Store extends ListenerAdapter {
             eb.setFooter("Item Store", member.getUser().getAvatarUrl());
             eb.setTimestamp(date.toInstant());
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         } else if (message[0].equalsIgnoreCase("buy")) {
 
             Date date = new Date();
@@ -97,7 +98,7 @@ public class Store extends ListenerAdapter {
             if (message.length == 1) {
                 eb.setTitle("\uD83D\uDECD Improper use of the command");
                 eb.setDescription("See **store** to see all the items available for purchase.");
-                e.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             }
 
@@ -111,7 +112,7 @@ public class Store extends ListenerAdapter {
                 if (balance < (pickaxePrice + (Profile.getMemberLevel(member) * 15))) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -128,7 +129,7 @@ public class Store extends ListenerAdapter {
                 if (balance < stickPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -145,7 +146,7 @@ public class Store extends ListenerAdapter {
                 if (balance < hammerPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -162,7 +163,7 @@ public class Store extends ListenerAdapter {
                 if (balance < daggerPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -179,7 +180,7 @@ public class Store extends ListenerAdapter {
                 if (balance < gunPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -196,7 +197,7 @@ public class Store extends ListenerAdapter {
                 if (balance < orbPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -213,7 +214,7 @@ public class Store extends ListenerAdapter {
                 if (balance < shieldPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -230,14 +231,14 @@ public class Store extends ListenerAdapter {
                 if (balance < bootsPrice) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
                 if (currentSwiftness == 10) {
                     eb.setTitle("\uD83D\uDECD Item Error");
                     eb.setDescription("You've reached max swiftness.");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -254,7 +255,7 @@ public class Store extends ListenerAdapter {
                 eb.setDescription("This item is not in the store. See **store** to see all the items available for purchase.");
             }
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
 
         } else if (message[0].equalsIgnoreCase("sell")) {
             int balance = Integer.parseInt(Database.getDb().getColumn(member.getId(), "coins"));
@@ -268,7 +269,7 @@ public class Store extends ListenerAdapter {
             if (message.length == 1) {
                 eb.setTitle("\uD83D\uDECD Improper use of the command");
                 eb.setDescription("Check your inventory for all the items that you can sell.");
-                e.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             }
 
@@ -278,7 +279,7 @@ public class Store extends ListenerAdapter {
                 if (numJunk == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
                     eb.setDescription("You do not own any junk!");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
 
                 }
@@ -301,7 +302,7 @@ public class Store extends ListenerAdapter {
                 if (bags == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
                     eb.setDescription("You do not own any bags of coins!");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
 
                 }
@@ -320,7 +321,7 @@ public class Store extends ListenerAdapter {
                 if (diamonds == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
                     eb.setDescription("You do not own any diamonds!");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
 
                 }
@@ -341,7 +342,7 @@ public class Store extends ListenerAdapter {
                 if (numJunk == 0 && bags == 0 && diamonds == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
                     eb.setDescription("You do not have any mine loot.");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -373,7 +374,7 @@ public class Store extends ListenerAdapter {
                 eb.setDescription("This item is not in your mine loot. See **inv** to see the mine loot that you have.");
             }
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 

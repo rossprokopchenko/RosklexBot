@@ -2,9 +2,8 @@ package events;
 
 import commands.Inventory;
 import commands.Store;
-import main.Rosklex;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -13,13 +12,14 @@ public class SkillFixer extends ListenerAdapter {
     int totalDefence = 0;
     int totalSwiftness = 0;
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        if (!isRosklexMessage) return;
+
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         totalAttack = 0;
         totalDefence = 0;

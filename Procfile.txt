@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* rosklex-core-1.0.0

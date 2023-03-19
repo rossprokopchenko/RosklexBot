@@ -9,12 +9,12 @@ import java.util.Map;
 public class Database {
 
     private static Database db = new Database();
+    private static String url = "jdbc:sqlite:src/main/resources/scores.db";
 
     public void run(){
         /*
         Database.getDb().dropTable();
         Database.getDb().createNewTable();
-
 
         Database.getDb().addColumn("exp", "0");
         Database.getDb().addColumn("coins", "0");
@@ -45,9 +45,9 @@ public class Database {
         Database.getDb().addColumn("boots", "0");
         Database.getDb().addColumn("mShield", "0");
         Database.getDb().addColumn("hourglass", "0");
+        Database.getDb().addColumn("rank", "0");
 
-         */
-        //Database.getDb().addColumn("rank", "0");
+        */
 
         //System.out.println(Database.getDb().tableColumns("tempOldTable"));
         //System.out.println(Database.getDb().tableColumns("scores"));
@@ -68,7 +68,6 @@ public class Database {
      */
     private Connection connect() {
         // SQLite connection string
-        String url = "jdbc:sqlite:scores.db";
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
@@ -80,7 +79,6 @@ public class Database {
 
     public void newUser(String id, String name) {
         // SQLite connection string
-        String url = "jdbc:sqlite:scores.db";
         String sql = "INSERT INTO scores (" + tableColumns("scores") + ") VALUES(" + tableQuestions("scores") + ")";
 
         String[] columns = tableColumns("scores").split(",");
@@ -114,9 +112,6 @@ public class Database {
      *
      */
     public static void createNewTable() {
-        // SQLite connection string
-        String url = "jdbc:sqlite:scores.db";
-
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS scores (\n"
                 + "    id text PRIMARY KEY,\n"
@@ -136,8 +131,6 @@ public class Database {
 
     private void addColumn(String column, String value) {
         // SQLite connection string
-        String url = "jdbc:sqlite:scores.db";
-
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
             stmt.execute("ALTER TABLE scores ADD COLUMN " + column + " text DEFAULT " + value + ";");
@@ -173,7 +166,6 @@ public class Database {
     }
 
     private String tableColumns(String table){
-        String url = "jdbc:sqlite:scores.db";
         String sql = "SELECT * FROM " + table + ";";
         String columns = "";
 
@@ -201,7 +193,6 @@ public class Database {
     }
 
     private String tableQuestions(String table){
-        String url = "jdbc:sqlite:scores.db";
         String sql = "SELECT * FROM " + table + ";";
         String questions = "";
 
@@ -229,8 +220,6 @@ public class Database {
     }
 
     public static void dropTable(){
-        // SQLite connection string
-        String url = "jdbc:sqlite:scores.db";
 
         // SQL statement for creating a new table
         String sql = "DROP TABLE scores;";
@@ -315,7 +304,6 @@ public class Database {
     }
 
     public void setColumn(String id, String column, String value){
-        String url = "jdbc:sqlite:scores.db";
         String sql = "UPDATE scores SET " + column + " = '" + value + "' WHERE id = " + id + ";";
 
         try (Connection conn = DriverManager.getConnection(url);

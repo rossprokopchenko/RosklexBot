@@ -6,9 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="rosklexBot" />
-        <module name="rosklexCopy" />
+        <module name="core-java" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="core-java" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

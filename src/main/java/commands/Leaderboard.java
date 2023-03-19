@@ -1,32 +1,28 @@
 package commands;
 
-import main.Rosklex;
+import events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
-import javax.annotation.Nonnull;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Leaderboard extends ListenerAdapter {
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
+        if (!isRosklexMessage) return;
 
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
-
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         message[0] = message[0].substring(1, message[0].length());
-
 
         if(message[0].equalsIgnoreCase("top")){
 
@@ -83,6 +79,7 @@ public class Leaderboard extends ListenerAdapter {
             EmbedBuilder eb = new EmbedBuilder();
 
             int start = 0;
+            int numPlayers = Database.getDb().getRows();
 
             eb.setColor(gold);
             eb.setFooter("Leaderboard Page 1", member.getUser().getAvatarUrl());
@@ -98,6 +95,8 @@ public class Leaderboard extends ListenerAdapter {
             }
 
             for(int i = start; i < start + 5; i++){
+                if (i >= numPlayers) continue;
+
                 double amount = Double.parseDouble("" + totalExpTop.get(ids[i]));
                 DecimalFormat formatter = new DecimalFormat("#,###");
 
@@ -116,12 +115,11 @@ public class Leaderboard extends ListenerAdapter {
                 }
             }
 
-
             eb.setAuthor("\uD83C\uDFC6 Leaderboard \uD83C\uDFC6");
             eb.setTimestamp(date.toInstant());
             eb.setDescription(leaderboard);
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 }

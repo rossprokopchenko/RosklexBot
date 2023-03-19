@@ -1,12 +1,10 @@
 package events;
 
-import main.Rosklex;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,14 +12,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RankFixer extends ListenerAdapter {
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+        if (!isRosklexMessage) return;
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         String[] ids = Database.getDb().getTop("name", "DESC");
 

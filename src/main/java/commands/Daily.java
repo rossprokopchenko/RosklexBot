@@ -1,9 +1,9 @@
 package commands;
 
-import main.Rosklex;
+import events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -12,14 +12,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Daily extends ListenerAdapter {
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+        if (!isRosklexMessage) return;
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         message[0] = message[0].substring(1);
 
@@ -40,10 +40,10 @@ public class Daily extends ListenerAdapter {
                 eb.setTitle("\uD83D\uDD65 Daily Help");
                 eb.setDescription(" The daily reward grants you " + dailyExp + " exp and " + dailyCoins + " coins. " +
                         "Once you claim your daily, your next daily will be available at 12 AM Eastern Standard Time");
-                e.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             } else if (message.length > 1) {
-                e.getChannel().sendMessage("Too many arguments").queue();
+                event.getChannel().sendMessage("Too many arguments").queue();
                 return;
             }
 
@@ -80,7 +80,7 @@ public class Daily extends ListenerAdapter {
                 eb.setDescription("You already claimed your daily today. Your next daily will be available in " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds.");
             }
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 

@@ -1,10 +1,10 @@
 package commands;
 
+import events.RosklexMessage;
 import events.SkillFixer;
-import main.Rosklex;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -12,13 +12,14 @@ import java.awt.*;
 import java.util.Date;
 
 public class Inventory extends ListenerAdapter {
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        if (!isRosklexMessage) return;
+
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         message[0] = message[0].substring(1, message[0].length());
 
@@ -26,7 +27,7 @@ public class Inventory extends ListenerAdapter {
 
             if (message.length == 2) {
                 try {
-                    member = e.getMessage().getMentionedMembers().get(0);
+                    member = event.getMessage().getMentions().getMembers().get(0);
                 } catch (Exception ex) {
 
                 }
@@ -149,7 +150,7 @@ public class Inventory extends ListenerAdapter {
             eb.setFooter(member.getUser().getName() + "'s inventory", member.getUser().getAvatarUrl());
             eb.setTimestamp(date.toInstant());
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
 
 

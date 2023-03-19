@@ -1,9 +1,9 @@
 package commands;
 
-import main.Rosklex;
+import events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import sqlite.Database;
 
@@ -43,13 +43,14 @@ public class Dungeon extends ListenerAdapter {
     private final int legendaryAttackReq = 200;
     private final int legendaryDefenceReq = 100;
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        String[] message = e.getMessage().getContentRaw().split(" ");
-        Member member = e.getMessage().getMember();
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
 
-        if (member.getUser().isBot() || message[0].charAt(0) != Rosklex.PREFIX) {
-            return;
-        }
+        if (!isRosklexMessage) return;
+
+        String[] message = event.getMessage().getContentRaw().split(" ");
+        Member member = event.getMessage().getMember();
 
         message[0] = message[0].substring(1);
 
@@ -86,7 +87,7 @@ public class Dungeon extends ListenerAdapter {
                             dungeonHelp(member), true);
                 }
 
-                e.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             }
 
@@ -110,14 +111,14 @@ public class Dungeon extends ListenerAdapter {
                     eb.setTitle("⚔ Dungeon Help Prompt");
                     eb.setDescription("You are already in a dungeon. Your run ends in " + hours + " hours, " +
                             minutes + " minutes and " + seconds + " seconds.");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
                 if (message.length == 2) {
                     eb.setTitle("⚔ Dungeon Help Prompt");
                     eb.setDescription("Improper use of command. Please use **dungeon help** for help.");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -208,14 +209,14 @@ public class Dungeon extends ListenerAdapter {
                     if (Profile.getMemberAttack(member) < normalAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
                     if (Profile.getMemberDefence(member) < normalDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
@@ -234,14 +235,14 @@ public class Dungeon extends ListenerAdapter {
                     if (Profile.getMemberAttack(member) < challengingAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
                     if (Profile.getMemberDefence(member) < challengingDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
@@ -260,14 +261,14 @@ public class Dungeon extends ListenerAdapter {
                     if (Profile.getMemberAttack(member) < extremeAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
                     if (Profile.getMemberDefence(member) < extremeDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
@@ -286,14 +287,14 @@ public class Dungeon extends ListenerAdapter {
                     if (Profile.getMemberAttack(member) < legendaryAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
                     if (Profile.getMemberDefence(member) < legendaryDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
-                        e.getChannel().sendMessage(eb.build()).queue();
+                        event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
@@ -338,7 +339,7 @@ public class Dungeon extends ListenerAdapter {
                 eb.addField("Difficulties, use **dungeon enter** *[difficulty]* to enter a dungeon",
                         dungeonHelp(member), true);
 
-                e.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             } else if (message[1].equalsIgnoreCase("claim")) {
                 int notifier = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dNotifier"));
@@ -348,7 +349,7 @@ public class Dungeon extends ListenerAdapter {
 
                 if (!inDungeon(member) && diff.equals("0")) {
                     eb.setDescription("You have nothing to claim. Enter another dungeon!");
-                    e.getChannel().sendMessage(eb.build()).queue();
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
                     return;
                 }
 
@@ -435,7 +436,7 @@ public class Dungeon extends ListenerAdapter {
                 eb.setDescription("Improper use of the command. Please use **dungeon help** for help.");
             }
 
-            e.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 
