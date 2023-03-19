@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS main.Roskflex
+web: java -cp target/classes:target/dependency/* -Dserver.port=$PORT $JAVA_OPTS -jar target/rosklex-core-1.0.0.jar
