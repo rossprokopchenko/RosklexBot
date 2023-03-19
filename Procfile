@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* main.Rosklex --port $PORT target/*.war JAVA_TOOL_OPTIONS -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* main.Rosklex voila --Voila.ip=0.0.0.0 --port $PORT target/*.war JAVA_TOOL_OPTIONS -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8
