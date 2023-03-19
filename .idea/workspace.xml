@@ -5,32 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f736a9e1-3757-463b-b712-8ceb555c84e0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Procfile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/main/Rosklex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/main/Rosklex.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Admin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Admin.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Daily.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Daily.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Dungeon.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Dungeon.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Help.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Help.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Info.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Inventory.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Inventory.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Leaderboard.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Leaderboard.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Mine.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Mine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Profile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Profile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/commands/Store.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/commands/Store.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config/Config.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config/Config.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config/ConfigLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config/ConfigLoader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/events/DungeonListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/events/DungeonListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/events/LevelListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/events/LevelListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/events/NewUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/events/NewUser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/events/RankFixer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/events/RankFixer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/events/RosklexMessage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/events/RosklexMessage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/events/SkillFixer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/events/SkillFixer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/main/Rosklex.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/main/Rosklex.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/sqlite/Database.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sqlite/Database.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/rosklex-core-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/rosklex-core-1.0.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Procfile" beforeDir="false" afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
