@@ -1,1 +1,1 @@
-web: java -cp target/classes/:target/dependency/* main.Rosklex
+web: java -cp target/classes/:target/dependency/* main.Rosklex -Dserver.port=$PORT
