@@ -1,6 +1,5 @@
 package main;
 
-import com.sun.corba.se.impl.activation.CommandHandler;
 import commands.*;
 import config.Config;
 import events.*;
@@ -13,7 +12,6 @@ import javax.security.auth.login.LoginException;
 import java.io.File;
 
 import static net.dv8tion.jda.api.entities.Activity.listening;
-import static net.dv8tion.jda.api.entities.Activity.playing;
 
 public class Rosklex {
     public static final char PREFIX = '!';
