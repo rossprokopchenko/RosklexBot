@@ -6,29 +6,48 @@ import events.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.json.JSONException;
 import sqlite.Database;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
+import java.io.IOException;
 
 import static net.dv8tion.jda.api.entities.Activity.listening;
 
 public class Rosklex {
-    public static final char PREFIX = '!';
+    public static char PREFIX = '!';
+    private static boolean devMode = false;
 
     public static void main(String[] args) throws Exception {
-        Config config = new Config(new File("botconfig.json"));
+        if (args.length < 1) {
+            System.out.println("Please specify a resource folder path.");
+            return;
+        }
 
-        run(config);
+        if (args.length > 1) {
+            if (args[1].equals("dev")) {
+                devMode = true;
+                PREFIX = '&';
+            }
+        }
+
+        String resourcePath = args[0];
+        System.out.println("Loading resources from path: " + resourcePath);
+
+        run(resourcePath);
     }
 
-    private static void run(Config config) throws LoginException {
-        JDA api = JDABuilder.createLight(config.getString("token"), GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+    private static void run(String resourcePath) throws LoginException, JSONException, IOException {
+        Config config = new Config(new File(resourcePath + "/botconfig.json"));
+        String token = config.getString("token");
+
+        if (devMode) token = config.getString("devToken");
+
+        JDA api = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
                 .setActivity(listening(PREFIX + "help commands"))
                 .build();
-        //JDA jda = new JDABuilder(config.getString("token")).setActivity(listening(" !help for commands")).build();
-
-        Database.getDb().run();
+        Database.getDb().run(resourcePath);
 
         api.addEventListener(new NewUser());
         api.addEventListener(new SkillFixer());

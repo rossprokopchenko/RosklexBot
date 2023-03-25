@@ -1,1 +1,0 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* main.Rosklex --port=$PORT --bind :$PORT target/*.war JAVA_TOOL_OPTIONS -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8

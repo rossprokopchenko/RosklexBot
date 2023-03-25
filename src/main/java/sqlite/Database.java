@@ -9,9 +9,10 @@ import java.util.Map;
 public class Database {
 
     private static Database db = new Database();
-    private static String url = "jdbc:sqlite:src/main/resources/scores.db";
+    private static String url;
 
-    public void run(){
+    public void run(String resourcePath){
+        url = "jdbc:sqlite:" + resourcePath + "/scores.db";
         /*
         Database.getDb().dropTable();
         Database.getDb().createNewTable();
@@ -54,6 +55,8 @@ public class Database {
 
         //Database.getDb().delete("499752045138411531");
         //System.out.println(getTop("level").toString());
+
+
 
         Database.getDb().selectAll();
     }
