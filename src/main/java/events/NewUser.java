@@ -14,18 +14,17 @@ public class NewUser extends ListenerAdapter {
 
         String[] message = event.getMessage().getContentRaw().split(" ");
 
-        if (message[0].charAt(0) == Rosklex.PREFIX) {
-            String userId = event.getMessage().getMember().getUser().getId();
-            String userName = event.getMessage().getMember().getUser().getName();
-            boolean existsDb = Database.getDb().exists(userId);
+        String userId = event.getMessage().getMember().getUser().getId();
+        String userName = event.getMessage().getMember().getUser().getName();
+        boolean existsDb = Database.getDb().exists(userId);
 
-            if (!existsDb) {
-                Database.getDb().newUser(userId, userName);
+        if (!existsDb) {
+            Database.getDb().newUser(userId, userName);
 
-                // might remove this line of code (so its not annoying)
-                event.getChannel().sendMessage("New user added to Database!").queue();
-            }
+            // might remove this line of code (so its not annoying)
+            event.getChannel().sendMessage("New user added to Database!").queue();
         }
+
 
     }
 }

@@ -16,7 +16,7 @@ import java.io.IOException;
 import static net.dv8tion.jda.api.entities.Activity.listening;
 
 public class Rosklex {
-    public static char PREFIX = '!';
+    public static char prefix;
     private static boolean devMode = false;
 
     public static void main(String[] args) throws Exception {
@@ -25,10 +25,13 @@ public class Rosklex {
             return;
         }
 
+        prefix = '!';
+
         if (args.length > 1) {
             if (args[1].equals("dev")) {
+                System.out.println("Dev bot started!");
                 devMode = true;
-                PREFIX = '&';
+                prefix = '&';
             }
         }
 
@@ -45,7 +48,7 @@ public class Rosklex {
         if (devMode) token = config.getString("devToken");
 
         JDA api = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
-                .setActivity(listening(PREFIX + "help commands"))
+                .setActivity(listening(prefix + "help commands"))
                 .build();
         Database.getDb().run(resourcePath);
 
@@ -65,5 +68,9 @@ public class Rosklex {
         api.addEventListener(new DungeonListener());
         api.addEventListener(new LevelListener());
 
+    }
+
+    public static char getPrefix() {
+        return prefix;
     }
 }

@@ -17,7 +17,7 @@ public class RosklexMessage {
         Member member = message.getMember();
         String[] messageContent = message.getContentRaw().split(" ");
 
-        if (member.getUser().isBot() || messageContent[0].charAt(0) != Rosklex.PREFIX) {
+        if (member.getUser().isBot() || messageContent[0].charAt(0) != Rosklex.getPrefix()) {
             return false;
         }
 
