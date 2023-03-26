@@ -1,11 +1,11 @@
-package commands;
+package listeners.commands;
 
-import events.RosklexMessage;
+import listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import sqlite.Database;
+import database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Calendar;
@@ -43,6 +43,14 @@ public class Dungeon extends ListenerAdapter {
     private final int legendaryAttackReq = 200;
     private final int legendaryDefenceReq = 100;
 
+    private DatabaseManager db;
+    private Profile profile;
+
+    public Dungeon(DatabaseManager db, Profile profile) {
+        this.db = db;
+        this.profile = profile;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
@@ -69,7 +77,7 @@ public class Dungeon extends ListenerAdapter {
                 // check if player already in dungeon
                 if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
-                    long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
+                    long dTime = Long.parseLong(db.getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
@@ -97,7 +105,7 @@ public class Dungeon extends ListenerAdapter {
                 // check if player already in dungeon
                 if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
-                    long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
+                    long dTime = Long.parseLong(db.getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
@@ -123,7 +131,7 @@ public class Dungeon extends ListenerAdapter {
                 }
 
 
-                int swiftness = Profile.getMemberSwiftness(member);
+                int swiftness = profile.getMemberSwiftness(member);
 
                 int easyMinutes = (30 - swiftness);
 
@@ -196,9 +204,9 @@ public class Dungeon extends ListenerAdapter {
                 if (message[2].equalsIgnoreCase("easy")) {
 
                     dungeonTimer.add(Calendar.MINUTE, easyMinutes);
-                    Database.getDb().setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
-                    Database.getDb().setColumn(member.getId(), "dDiff", "easy");
-                    Database.getDb().setColumn(member.getId(), "dNotifier", "1");
+                    db.setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
+                    db.setColumn(member.getId(), "dDiff", "easy");
+                    db.setColumn(member.getId(), "dNotifier", "1");
 
                     eb.setTitle("⚔ Dungeon Entered");
                     eb.setDescription("You've entered the **Easy** dungeon! If your run is successful, you will be able" +
@@ -206,14 +214,14 @@ public class Dungeon extends ListenerAdapter {
 
                 } else if (message[2].equalsIgnoreCase("normal")) {
 
-                    if (Profile.getMemberAttack(member) < normalAttackReq) {
+                    if (profile.getMemberAttack(member) < normalAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
-                    if (Profile.getMemberDefence(member) < normalDefenceReq) {
+                    if (profile.getMemberDefence(member) < normalDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
@@ -222,9 +230,9 @@ public class Dungeon extends ListenerAdapter {
 
                     dungeonTimer.add(Calendar.MINUTE, normalMinutes);
                     dungeonTimer.add(Calendar.HOUR, normalHours);
-                    Database.getDb().setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
-                    Database.getDb().setColumn(member.getId(), "dDiff", "normal");
-                    Database.getDb().setColumn(member.getId(), "dNotifier", "1");
+                    db.setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
+                    db.setColumn(member.getId(), "dDiff", "normal");
+                    db.setColumn(member.getId(), "dNotifier", "1");
 
                     eb.setTitle("⚔ Dungeon Entered");
                     eb.setDescription("You've entered the **Normal** dungeon! If your run is successful, you will be able" +
@@ -232,14 +240,14 @@ public class Dungeon extends ListenerAdapter {
 
                 } else if (message[2].equalsIgnoreCase("challenging")) {
 
-                    if (Profile.getMemberAttack(member) < challengingAttackReq) {
+                    if (profile.getMemberAttack(member) < challengingAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
-                    if (Profile.getMemberDefence(member) < challengingDefenceReq) {
+                    if (profile.getMemberDefence(member) < challengingDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
@@ -248,9 +256,9 @@ public class Dungeon extends ListenerAdapter {
 
                     dungeonTimer.add(Calendar.MINUTE, challengingMinutes);
                     dungeonTimer.add(Calendar.HOUR, challengingHours);
-                    Database.getDb().setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
-                    Database.getDb().setColumn(member.getId(), "dDiff", "challenging");
-                    Database.getDb().setColumn(member.getId(), "dNotifier", "1");
+                    db.setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
+                    db.setColumn(member.getId(), "dDiff", "challenging");
+                    db.setColumn(member.getId(), "dNotifier", "1");
 
                     eb.setTitle("⚔ Dungeon Entered");
                     eb.setDescription("You've entered the **Challenging** dungeon! If your run is successful, you will be able" +
@@ -258,14 +266,14 @@ public class Dungeon extends ListenerAdapter {
 
                 } else if (message[2].equalsIgnoreCase("extreme")) {
 
-                    if (Profile.getMemberAttack(member) < extremeAttackReq) {
+                    if (profile.getMemberAttack(member) < extremeAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
-                    if (Profile.getMemberDefence(member) < extremeDefenceReq) {
+                    if (profile.getMemberDefence(member) < extremeDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
@@ -274,9 +282,9 @@ public class Dungeon extends ListenerAdapter {
 
                     dungeonTimer.add(Calendar.MINUTE, extremeMinutes);
                     dungeonTimer.add(Calendar.HOUR, extremeHours);
-                    Database.getDb().setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
-                    Database.getDb().setColumn(member.getId(), "dDiff", "extreme");
-                    Database.getDb().setColumn(member.getId(), "dNotifier", "1");
+                    db.setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
+                    db.setColumn(member.getId(), "dDiff", "extreme");
+                    db.setColumn(member.getId(), "dNotifier", "1");
 
                     eb.setTitle("⚔ Dungeon Entered");
                     eb.setDescription("You've entered the **Extreme** dungeon! If your run is successful, you will be able" +
@@ -284,14 +292,14 @@ public class Dungeon extends ListenerAdapter {
 
                 } else if (message[2].equalsIgnoreCase("legendary")) {
 
-                    if (Profile.getMemberAttack(member) < legendaryAttackReq) {
+                    if (profile.getMemberAttack(member) < legendaryAttackReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Attack** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         return;
                     }
 
-                    if (Profile.getMemberDefence(member) < legendaryDefenceReq) {
+                    if (profile.getMemberDefence(member) < legendaryDefenceReq) {
                         eb.setTitle("⚔ Dungeon Error");
                         eb.setDescription("Your **Defence** is not high enough for this difficulty. Please buy items from the shop.");
                         event.getChannel().sendMessageEmbeds(eb.build()).queue();
@@ -300,9 +308,9 @@ public class Dungeon extends ListenerAdapter {
 
                     dungeonTimer.add(Calendar.MINUTE, legendaryMinutes);
                     dungeonTimer.add(Calendar.HOUR, legendaryHours);
-                    Database.getDb().setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
-                    Database.getDb().setColumn(member.getId(), "dDiff", "legendary");
-                    Database.getDb().setColumn(member.getId(), "dNotifier", "1");
+                    db.setColumn(member.getId(), "dTime", "" + dungeonTimer.getTimeInMillis());
+                    db.setColumn(member.getId(), "dDiff", "legendary");
+                    db.setColumn(member.getId(), "dNotifier", "1");
 
                     eb.setTitle("⚔ Dungeon Entered");
                     eb.setDescription("You've entered the **Legendary** dungeon! If your run is successful, you will be able" +
@@ -320,7 +328,7 @@ public class Dungeon extends ListenerAdapter {
                 // check if player already in dungeon
                 if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
-                    long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
+                    long dTime = Long.parseLong(db.getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
@@ -342,8 +350,8 @@ public class Dungeon extends ListenerAdapter {
                 event.getChannel().sendMessageEmbeds(eb.build()).queue();
                 return;
             } else if (message[1].equalsIgnoreCase("claim")) {
-                int notifier = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dNotifier"));
-                String diff = Database.getDb().getColumn(member.getId(), "dDiff");
+                int notifier = Integer.parseInt(db.getColumn(member.getId(), "dNotifier"));
+                String diff = db.getColumn(member.getId(), "dDiff");
 
                 eb.setTitle("⚔ Dungeon Reward Claim");
 
@@ -357,7 +365,7 @@ public class Dungeon extends ListenerAdapter {
                     int expToAdd = 0;
                     int coinsToAdd = 0;
 
-                    int dungeonCounter = Integer.parseInt(Database.getDb().getColumn(member.getId(), "dCounter"));
+                    int dungeonCounter = Integer.parseInt(db.getColumn(member.getId(), "dCounter"));
 
                     switch (diff) {
                         case "easy":
@@ -382,21 +390,21 @@ public class Dungeon extends ListenerAdapter {
                             break;
                     }
 
-                    int currentExp = Integer.parseInt(Database.getDb().getColumn(member.getId(), "exp"));
-                    int currentCoins = Integer.parseInt(Database.getDb().getColumn(member.getId(), "coins"));
+                    int currentExp = Integer.parseInt(db.getColumn(member.getId(), "exp"));
+                    int currentCoins = Integer.parseInt(db.getColumn(member.getId(), "coins"));
 
-                    Database.getDb().setColumn(member.getId(), "exp", "" + (currentExp + expToAdd));
-                    Database.getDb().setColumn(member.getId(), "coins", "" + (currentCoins + coinsToAdd));
-                    Database.getDb().setColumn(member.getId(), "dDiff", "0");
-                    Database.getDb().setColumn(member.getId(), "dNotifier", "0");
+                    db.setColumn(member.getId(), "exp", "" + (currentExp + expToAdd));
+                    db.setColumn(member.getId(), "coins", "" + (currentCoins + coinsToAdd));
+                    db.setColumn(member.getId(), "dDiff", "0");
+                    db.setColumn(member.getId(), "dNotifier", "0");
 
-                    Database.getDb().setColumn(member.getId(), "dCounter", "" + (dungeonCounter + 1));
+                    db.setColumn(member.getId(), "dCounter", "" + (dungeonCounter + 1));
 
                     eb.setDescription("From your previous run, you claimed " + expToAdd + " exp, " + coinsToAdd + " coins. Enter another one!");
 
                 } else {
                     Calendar now = Calendar.getInstance();
-                    long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
+                    long dTime = Long.parseLong(db.getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
@@ -415,7 +423,7 @@ public class Dungeon extends ListenerAdapter {
 
                 if (inDungeon(member)) {
                     Calendar now = Calendar.getInstance();
-                    long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
+                    long dTime = Long.parseLong(db.getColumn(member.getId(), "dTime"));
 
                     long millisLeft = dTime - now.getTimeInMillis();
                     long hoursLeft = millisLeft / (60 * 60 * 1000);
@@ -441,7 +449,7 @@ public class Dungeon extends ListenerAdapter {
     }
 
     public String dungeonHelp(Member member) {
-        int swiftness = Profile.getMemberSwiftness(member);
+        int swiftness = profile.getMemberSwiftness(member);
 
         int easyMinutes = (30 - swiftness);
         String easyLength = easyMinutes + " minutes";
@@ -540,9 +548,9 @@ public class Dungeon extends ListenerAdapter {
         return help;
     }
 
-    public static boolean inDungeon(Member member) {
+    public boolean inDungeon(Member member) {
         Calendar now = Calendar.getInstance();
-        long dTime = Long.parseLong(Database.getDb().getColumn(member.getId(), "dTime"));
+        long dTime = Long.parseLong(db.getColumn(member.getId(), "dTime"));
 
         if (now.getTimeInMillis() <= dTime) {
             return true;

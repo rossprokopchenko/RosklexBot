@@ -1,6 +1,6 @@
-package commands;
+package listeners.commands;
 
-import events.RosklexMessage;
+import listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;

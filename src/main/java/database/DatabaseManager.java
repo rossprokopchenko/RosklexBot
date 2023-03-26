@@ -1,68 +1,75 @@
-package sqlite;
+package database;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class Database {
-
-    private static Database db = new Database();
+@Slf4j
+public class DatabaseManager {
     private static String url;
 
-    public void run(String resourcePath){
-        url = "jdbc:sqlite:" + resourcePath + "/scores.db";
-        /*
-        Database.getDb().dropTable();
-        Database.getDb().createNewTable();
+    public DatabaseManager(String resourcePath, String table) {
+        if (fileExists(resourcePath, table)) {
+            log.info("Successfully loaded database file!");
 
-        Database.getDb().addColumn("exp", "0");
-        Database.getDb().addColumn("coins", "0");
-        Database.getDb().addColumn("lastDaily", "0");
-        Database.getDb().addColumn("pickaxe", "0");
-        Database.getDb().addColumn("stick", "0");
-        Database.getDb().addColumn("hammer", "0");
-        Database.getDb().addColumn("dagger", "0");
-        Database.getDb().addColumn("gun", "0");
-        Database.getDb().addColumn("attack", "0");
-        Database.getDb().addColumn("defence", "0");
-        Database.getDb().addColumn("swiftness", "0");
-        Database.getDb().addColumn("dTime", "0");
-        Database.getDb().addColumn("dDiff", "0");
-        Database.getDb().addColumn("dNotifier", "0");
-        Database.getDb().addColumn("dCounter", "0");
-        Database.getDb().addColumn("gear", "0");
-        Database.getDb().addColumn("wrench", "0");
-        Database.getDb().addColumn("rustyKey", "0");
-        Database.getDb().addColumn("battery", "0");
-        Database.getDb().addColumn("moneyBag", "0");
-        Database.getDb().addColumn("diamond", "0");
-        Database.getDb().addColumn("mKnife", "0");
-        Database.getDb().addColumn("legAmulet","0");
-        Database.getDb().addColumn("amuletMult", "1");
-        Database.getDb().addColumn("orb", "0");
-        Database.getDb().addColumn("shield", "0");
-        Database.getDb().addColumn("boots", "0");
-        Database.getDb().addColumn("mShield", "0");
-        Database.getDb().addColumn("hourglass", "0");
-        Database.getDb().addColumn("rank", "0");
-
-        */
-
-        //System.out.println(Database.getDb().tableColumns("tempOldTable"));
-        //System.out.println(Database.getDb().tableColumns("scores"));
-
-        //Database.getDb().delete("499752045138411531");
-        //System.out.println(getTop("level").toString());
-
-
-
-        Database.getDb().selectAll();
+            this.url = "jdbc:sqlite:" + resourcePath + "/" + table + ".db";
+            selectAll(table, 5);
+        } else {
+            log.error("Could not find database file :(");
+        }
     }
 
-    public static Database getDb(){
-        return db;
+    private boolean fileExists(String resourcePath, String table) {
+        File f = new File(resourcePath + "/" + table + ".db");
+
+        log.info("Attempting to read file: {}", f.toPath());
+
+        if (f.isFile() && !f.isDirectory()) return true;
+
+        return false;
+    }
+
+    public void recover(){
+
+        dropTable("scores");
+        createNewTable("scores");
+
+        addColumn("exp", "0");
+        addColumn("coins", "0");
+        addColumn("lastDaily", "0");
+        addColumn("pickaxe", "0");
+        addColumn("stick", "0");
+        addColumn("hammer", "0");
+        addColumn("dagger", "0");
+        addColumn("gun", "0");
+        addColumn("attack", "0");
+        addColumn("defence", "0");
+        addColumn("swiftness", "0");
+        addColumn("dTime", "0");
+        addColumn("dDiff", "0");
+        addColumn("dNotifier", "0");
+        addColumn("dCounter", "0");
+        addColumn("gear", "0");
+        addColumn("wrench", "0");
+        addColumn("rustyKey", "0");
+        addColumn("battery", "0");
+        addColumn("moneyBag", "0");
+        addColumn("diamond", "0");
+        addColumn("mKnife", "0");
+        addColumn("legAmulet","0");
+        addColumn("amuletMult", "1");
+        addColumn("orb", "0");
+        addColumn("shield", "0");
+        addColumn("boots", "0");
+        addColumn("mShield", "0");
+        addColumn("hourglass", "0");
+        addColumn("rank", "0");
+
+        //System.out.println(getTop("level").toString());
+
     }
 
     /**
@@ -75,7 +82,7 @@ public class Database {
         try {
             conn = DriverManager.getConnection(url);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while connecting to url \"{}\"", url, e);
         }
         return conn;
     }
@@ -106,7 +113,7 @@ public class Database {
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while registering new user \"{}\" with id \"{}\"", name, id, e);
         }
     }
 
@@ -114,19 +121,19 @@ public class Database {
      * Create a new table in the test database
      *
      */
-    public static void createNewTable() {
+    public static void createNewTable(String table) {
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS scores (\n"
+        String sql = String.format("CREATE TABLE IF NOT EXISTS %s (\n"
                 + "    id text PRIMARY KEY,\n"
                 + "    name text NOT NULL,\n"
                 + "    level integer\n"
-                + "); ";
+                + "); ", table);
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
-            System.out.println("Created table");
+            log.info("Successfully created table.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -142,9 +149,9 @@ public class Database {
             //stmt.execute("INSERT INTO scores ("+ tableColumns("TempOldTable") +") SELECT * FROM TempOldTable;");
             //stmt.execute("DROP TABLE TempOldTable;");
 
-            System.out.println("added column");
+            log.info("Successfully added column \"{}\" with value \"{}\"", column, value);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while adding column \"{}\" with value \"{}\"", column, value, e);
         }
     }
 
@@ -162,7 +169,7 @@ public class Database {
                 top.put(rs.getString("id"), rs.getString(column));
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while getting top 25.", e);
         }
 
         return top.keySet().toArray(new String[top.size()]);
@@ -189,7 +196,7 @@ public class Database {
                 }
             }
         } catch (SQLException e){
-            System.out.println(e.getMessage());
+            log.error("Error while getting table columns.", e);
         }
 
         return columns;
@@ -216,16 +223,16 @@ public class Database {
                 }
             }
         } catch (SQLException e){
-            System.out.println(e.getMessage());
+            log.error("", e);
         }
 
         return questions;
     }
 
-    public static void dropTable(){
+    public static void dropTable(String table){
 
         // SQL statement for creating a new table
-        String sql = "DROP TABLE scores;";
+        String sql = String.format("DROP TABLE %s;", table);
         String sql2 = "DROP TABLE TempOldTable;";
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -234,31 +241,47 @@ public class Database {
             stmt.execute(sql);
             System.out.println("Dropped table");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while dropping table", e);
         }
     }
 
-    public void selectAll(){
-        String sql = "SELECT * FROM scores";
+    public void selectAll(String table, int cols){
+        String sql = String.format("SELECT * FROM %s", table);
 
-        String s = tableColumns("scores");
+        String s = tableColumns(table);
         String[] columnArray = s.split(",");
+        //int numColumns = columnArray.length;
+        int numColumns = cols;
 
         try (Connection conn = this.connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
+            log.info("Printing all values found in database:");
+            String columns = "";
+
+            for(int i = 0; i < numColumns; i++) {
+
+                if (i == numColumns - 1)
+                    columns += columnArray[i];
+                else
+                    columns += columnArray[i] + "\t";
+            }
+
+            log.info("{}", columns);
+
             // loop through the result set
             while (rs.next()) {
-                for(int i = 0; i < columnArray.length; i++){
-                    if(i == columnArray.length - 1)
-                        System.out.print(rs.getString(columnArray[i]) + "\n");
-                     else
-                        System.out.print(rs.getString(columnArray[i]) + "\t");
+                String row = "";
+
+                for(int i = 0; i < numColumns; i++){
+                    row += rs.getString(columnArray[i]) + "\t";
                 }
+
+                log.info("{}", row);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while selecting all.", e);
         }
     }
 
@@ -280,7 +303,7 @@ public class Database {
                 value += rs.getString(column);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while getting column \"{}\" where id \"{}\"", column, id, e);
         }
 
         return value;
@@ -300,7 +323,7 @@ public class Database {
                 counter++;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while getting all rows.", e);
         }
 
         return counter;
@@ -310,12 +333,10 @@ public class Database {
         String sql = "UPDATE scores SET " + column + " = '" + value + "' WHERE id = " + id + ";";
 
         try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
-
+            Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while setting id \"{}\" column \"{}\" value \"{}\".", id, column, value, e);
         }
     }
 
@@ -331,7 +352,7 @@ public class Database {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while deleting id \"{}\".", id, e);
         }
     }
 
@@ -353,7 +374,7 @@ public class Database {
                 idCol = rs.getString("id");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            log.error("Error while checking for id \"{}\" existence.", id, e);
         }
 
         if(idCol.equals(id))

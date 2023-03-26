@@ -1,11 +1,11 @@
-package commands;
+package listeners.commands;
 
-import events.RosklexMessage;
+import listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import sqlite.Database;
+import database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Date;
@@ -45,6 +45,16 @@ public class Store extends ListenerAdapter {
     private final String purchasedItem1 = ", congratulations on purchasing a ";
     private final String purchasedItem2 = "** coins has been deducted from your account.";
 
+    private DatabaseManager db;
+    private Profile profile;
+    private Inventory inventory;
+
+    public Store(DatabaseManager db, Profile profile, Inventory inventory) {
+        this.db = db;
+        this.profile = profile;
+        this.inventory = inventory;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
@@ -57,7 +67,7 @@ public class Store extends ListenerAdapter {
         message[0] = message[0].substring(1, message[0].length());
 
         if (message[0].equalsIgnoreCase("store") || message[0].equalsIgnoreCase("shop")) {
-            int balance = Integer.parseInt(Database.getDb().getColumn(member.getId(), "coins"));
+            int balance = Integer.parseInt(db.getColumn(member.getId(), "coins"));
             Date date = new Date();
             EmbedBuilder eb = new EmbedBuilder();
 
@@ -67,7 +77,7 @@ public class Store extends ListenerAdapter {
             eb.setTitle("\uD83D\uDECD Item Store");
             eb.setDescription("Your balance is: **" + balance + "** coins");
             eb.addField("Item (Price)",
-                    "⛏ Standard **Pickaxe** (" + (pickaxePrice + (Profile.getMemberLevel(member) * 15)) + ") : " + getDefinition("Pickaxe") + "\n" +
+                    "⛏ Standard **Pickaxe** (" + (pickaxePrice + (profile.getMemberLevel(member) * 15)) + ") : " + getDefinition("Pickaxe") + "\n" +
                             "\n[ *Combat Tools* ]\n\n" +
                             "\uD83E\uDDAF Walking **Stick** (" + stickPrice + ") : " + getDefinition("Walking Stick") + "\n" +
                             "\uD83D\uDD28 A Handyman's **Hammer** (" + hammerPrice + ") : " + getDefinition("Hammer") + "\n" +
@@ -102,14 +112,14 @@ public class Store extends ListenerAdapter {
                 return;
             }
 
-            int balance = Integer.parseInt(Database.getDb().getColumn(member.getId(), "coins"));
-            int currentAttack = Profile.getMemberAttack(member);
-            int currentDefence = Profile.getMemberDefence(member);
-            int currentSwiftness = Profile.getMemberSwiftness(member);
+            int balance = Integer.parseInt(db.getColumn(member.getId(), "coins"));
+            int currentAttack = profile.getMemberAttack(member);
+            int currentDefence = profile.getMemberDefence(member);
+            int currentSwiftness = profile.getMemberSwiftness(member);
 
             if (message[1].equalsIgnoreCase("pickaxe") || message[1].equalsIgnoreCase("p")) {
 
-                if (balance < (pickaxePrice + (Profile.getMemberLevel(member) * 15))) {
+                if (balance < (pickaxePrice + (profile.getMemberLevel(member) * 15))) {
                     eb.setTitle("\uD83D\uDECD Insufficient Funds");
                     eb.setDescription(noCoins);
                     event.getChannel().sendMessageEmbeds(eb.build()).queue();
@@ -118,11 +128,11 @@ public class Store extends ListenerAdapter {
 
                 eb.setTitle("\uD83D\uDECD Item Purchased");
                 eb.setDescription(member.getUser().getName() + purchasedItem1 + "⛏ **Standard Pickaxe**" +
-                        "\n**" + (pickaxePrice + (Profile.getMemberLevel(member) * 15)) + purchasedItem2);
-                eb.addField("", "Your new balance is " + (balance - (pickaxePrice + (Profile.getMemberLevel(member) * 15))) + " coins.", false);
+                        "\n**" + (pickaxePrice + (profile.getMemberLevel(member) * 15)) + purchasedItem2);
+                eb.addField("", "Your new balance is " + (balance - (pickaxePrice + (profile.getMemberLevel(member) * 15))) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "pickaxe", "" + (Inventory.getPickDurability(member) + pickaxeDurability));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - (pickaxePrice + (Profile.getMemberLevel(member) * 15))));
+                db.setColumn(member.getId(), "pickaxe", "" + (inventory.getPickDurability(member) + pickaxeDurability));
+                db.setColumn(member.getId(), "coins", "" + (balance - (pickaxePrice + (profile.getMemberLevel(member) * 15))));
 
             } else if (message[1].equalsIgnoreCase("stick")) {
 
@@ -138,8 +148,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + stickPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - stickPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "stick", "" + (Inventory.getStick(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - stickPrice));
+                db.setColumn(member.getId(), "stick", "" + (inventory.getStick(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - stickPrice));
 
             } else if (message[1].equalsIgnoreCase("hammer")) {
 
@@ -155,8 +165,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + hammerPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - hammerPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "hammer", "" + (Inventory.getHammer(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - hammerPrice));
+                db.setColumn(member.getId(), "hammer", "" + (inventory.getHammer(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - hammerPrice));
 
             } else if (message[1].equalsIgnoreCase("dagger")) {
 
@@ -172,8 +182,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + daggerPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - daggerPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "dagger", "" + (Inventory.getDagger(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - daggerPrice));
+                db.setColumn(member.getId(), "dagger", "" + (inventory.getDagger(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - daggerPrice));
 
             } else if (message[1].equalsIgnoreCase("gun")) {
 
@@ -189,8 +199,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + gunPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - gunPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "gun", "" + (Inventory.getGun(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - gunPrice));
+                db.setColumn(member.getId(), "gun", "" + (inventory.getGun(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - gunPrice));
 
             } else if (message[1].equalsIgnoreCase("orb")) {
 
@@ -206,8 +216,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + orbPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - orbPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "orb", "" + (Inventory.getProtectionOrb(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - orbPrice));
+                db.setColumn(member.getId(), "orb", "" + (inventory.getProtectionOrb(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - orbPrice));
 
             } else if (message[1].equalsIgnoreCase("shield")) {
 
@@ -223,8 +233,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + shieldPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - shieldPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "shield", "" + (Inventory.getShield(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - shieldPrice));
+                db.setColumn(member.getId(), "shield", "" + (inventory.getShield(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - shieldPrice));
 
             } else if (message[1].equalsIgnoreCase("boots")) {
 
@@ -247,8 +257,8 @@ public class Store extends ListenerAdapter {
                         "\n**" + bootsPrice + purchasedItem2);
                 eb.addField("", "Your new balance is " + (balance - bootsPrice) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "boots", "" + (Inventory.getBoots(member) + 1));
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance - bootsPrice));
+                db.setColumn(member.getId(), "boots", "" + (inventory.getBoots(member) + 1));
+                db.setColumn(member.getId(), "coins", "" + (balance - bootsPrice));
 
             } else {
                 eb.setTitle("\uD83D\uDECD Item Not Found");
@@ -258,7 +268,7 @@ public class Store extends ListenerAdapter {
             event.getChannel().sendMessageEmbeds(eb.build()).queue();
 
         } else if (message[0].equalsIgnoreCase("sell")) {
-            int balance = Integer.parseInt(Database.getDb().getColumn(member.getId(), "coins"));
+            int balance = Integer.parseInt(db.getColumn(member.getId(), "coins"));
 
             Date date = new Date();
             EmbedBuilder eb = new EmbedBuilder();
@@ -274,7 +284,7 @@ public class Store extends ListenerAdapter {
             }
 
             if (message[1].equalsIgnoreCase("junk")) {
-                int numJunk = Inventory.getJunk(member);
+                int numJunk = inventory.getJunk(member);
 
                 if (numJunk == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
@@ -284,20 +294,20 @@ public class Store extends ListenerAdapter {
 
                 }
 
-                int junkSell = (int) (Profile.getMemberLevel(member) * 0.5) * numJunk + junkPrice;
+                int junkSell = (int) (profile.getMemberLevel(member) * 0.5) * numJunk + junkPrice;
 
                 eb.setTitle("\uD83D\uDECD Item Sold");
                 eb.setDescription(member.getUser().getName() + ", You sold **" + numJunk + "** junk for **" + junkSell + "** coins.");
                 eb.addField("", "Your new balance is " + (balance + junkSell) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance + junkSell));
-                Database.getDb().setColumn(member.getId(), "gear", "0");
-                Database.getDb().setColumn(member.getId(), "wrench", "0");
-                Database.getDb().setColumn(member.getId(), "rustyKey", "0");
-                Database.getDb().setColumn(member.getId(), "battery", "0");
+                db.setColumn(member.getId(), "coins", "" + (balance + junkSell));
+                db.setColumn(member.getId(), "gear", "0");
+                db.setColumn(member.getId(), "wrench", "0");
+                db.setColumn(member.getId(), "rustyKey", "0");
+                db.setColumn(member.getId(), "battery", "0");
 
             } else if (message[1].equalsIgnoreCase("bag") || message[1].equalsIgnoreCase("bags")) {
-                int bags = Inventory.getMoneyBags(member);
+                int bags = inventory.getMoneyBags(member);
 
                 if (bags == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
@@ -307,16 +317,16 @@ public class Store extends ListenerAdapter {
 
                 }
 
-                int bagSell = (Profile.getMemberLevel(member) * 5) * bags + bagsPrice;
+                int bagSell = (profile.getMemberLevel(member) * 5) * bags + bagsPrice;
 
                 eb.setTitle("\uD83D\uDECD Item Sold");
                 eb.setDescription(member.getUser().getName() + ", You sold **" + bags + "** bag(s) of coins for **" + bagSell + "** coins!");
                 eb.addField("", "Your new balance is " + (balance + bagSell) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance + bagSell));
-                Database.getDb().setColumn(member.getId(), "moneyBag", "0");
+                db.setColumn(member.getId(), "coins", "" + (balance + bagSell));
+                db.setColumn(member.getId(), "moneyBag", "0");
             } else if (message[1].equalsIgnoreCase("diamond") || message[1].equalsIgnoreCase("diamonds")) {
-                int diamonds = Inventory.getDiamonds(member);
+                int diamonds = inventory.getDiamonds(member);
 
                 if (diamonds == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
@@ -326,18 +336,18 @@ public class Store extends ListenerAdapter {
 
                 }
 
-                int diamondSell = (Profile.getMemberLevel(member) * 10) * diamonds + diamondsPrice;
+                int diamondSell = (profile.getMemberLevel(member) * 10) * diamonds + diamondsPrice;
 
                 eb.setTitle("\uD83D\uDECD Item Sold");
                 eb.setDescription(member.getUser().getName() + ", You sold **" + diamonds + "** diamond(s) for **" + diamondSell + "** coins!");
                 eb.addField("", "Your new balance is " + (balance + diamondSell) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance + (diamondSell)));
-                Database.getDb().setColumn(member.getId(), "diamond", "0");
+                db.setColumn(member.getId(), "coins", "" + (balance + (diamondSell)));
+                db.setColumn(member.getId(), "diamond", "0");
             } else if (message[1].equalsIgnoreCase("mine") && message.length == 3 && message[2].equalsIgnoreCase("all")) {
-                int numJunk = Inventory.getJunk(member);
-                int bags = Inventory.getMoneyBags(member);
-                int diamonds = Inventory.getDiamonds(member);
+                int numJunk = inventory.getJunk(member);
+                int bags = inventory.getMoneyBags(member);
+                int diamonds = inventory.getDiamonds(member);
 
                 if (numJunk == 0 && bags == 0 && diamonds == 0) {
                     eb.setTitle("\uD83D\uDECD Item Error");
@@ -349,26 +359,26 @@ public class Store extends ListenerAdapter {
                 int totalSell = 0;
 
                 if (diamonds > 0) {
-                    totalSell += (Profile.getMemberLevel(member) * 5) * diamonds + diamondsPrice;
+                    totalSell += (profile.getMemberLevel(member) * 5) * diamonds + diamondsPrice;
                 }
                 if (bags > 0) {
-                    totalSell += (Profile.getMemberLevel(member) * 10) * bags + bagsPrice;
+                    totalSell += (profile.getMemberLevel(member) * 10) * bags + bagsPrice;
                 }
                 if (numJunk > 0) {
-                    totalSell += (int) (Profile.getMemberLevel(member) * 0.5) * numJunk + junkPrice;
+                    totalSell += (int) (profile.getMemberLevel(member) * 0.5) * numJunk + junkPrice;
                 }
 
                 eb.setTitle("\uD83D\uDECD Item Sold");
                 eb.setDescription(member.getUser().getName() + ", You sold all of your mine loot for **" + totalSell + "** coins!");
                 eb.addField("", "Your new balance is " + (balance + totalSell) + " coins.", false);
 
-                Database.getDb().setColumn(member.getId(), "coins", "" + (balance + totalSell));
-                Database.getDb().setColumn(member.getId(), "gear", "0");
-                Database.getDb().setColumn(member.getId(), "wrench", "0");
-                Database.getDb().setColumn(member.getId(), "rustyKey", "0");
-                Database.getDb().setColumn(member.getId(), "battery", "0");
-                Database.getDb().setColumn(member.getId(), "moneyBag", "0");
-                Database.getDb().setColumn(member.getId(), "diamond", "0");
+                db.setColumn(member.getId(), "coins", "" + (balance + totalSell));
+                db.setColumn(member.getId(), "gear", "0");
+                db.setColumn(member.getId(), "wrench", "0");
+                db.setColumn(member.getId(), "rustyKey", "0");
+                db.setColumn(member.getId(), "battery", "0");
+                db.setColumn(member.getId(), "moneyBag", "0");
+                db.setColumn(member.getId(), "diamond", "0");
             } else {
                 eb.setTitle("\uD83D\uDECD Item Not Found");
                 eb.setDescription("This item is not in your mine loot. See **inv** to see the mine loot that you have.");

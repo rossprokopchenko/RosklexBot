@@ -1,12 +1,11 @@
-package events;
+package listeners.events;
 
-import commands.Profile;
-import main.Rosklex;
+import listeners.commands.Profile;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import sqlite.Database;
+import database.DatabaseManager;
 
 import java.awt.*;
 import java.math.BigDecimal;
@@ -14,7 +13,15 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-public class LevelListener extends ListenerAdapter {
+public class LevelUpNotifier extends ListenerAdapter {
+    private DatabaseManager db;
+    private Profile profile;
+
+    public LevelUpNotifier(DatabaseManager db, Profile profile) {
+        this.db = db;
+        this.profile = profile;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
@@ -26,10 +33,10 @@ public class LevelListener extends ListenerAdapter {
         message[0] = message[0].substring(1, message[0].length());
 
         Member member = event.getMessage().getMember();
-        int memberExp = Profile.getMemberExp(member);
-        int memberLevel = Profile.getMemberLevel(member);
+        int memberExp = profile.getMemberExp(member);
+        int memberLevel = profile.getMemberLevel(member);
 
-        int levelUp = 50 * (int) Math.pow(Profile.getMemberLevel(member) - 2, 2) + 150 * (Profile.getMemberLevel(member) - 2) + 300;
+        int levelUp = 50 * (int) Math.pow(profile.getMemberLevel(member) - 2, 2) + 150 * (profile.getMemberLevel(member) - 2) + 300;
 
         if (memberExp >= levelUp) {
             while (memberExp >= levelUp) {
@@ -37,8 +44,8 @@ public class LevelListener extends ListenerAdapter {
                 memberExp -= levelUp;
             }
 
-            Database.getDb().setColumn(member.getId(), "level", "" + memberLevel);
-            Database.getDb().setColumn(member.getId(), "exp", "" + memberExp);
+            db.setColumn(member.getId(), "level", "" + memberLevel);
+            db.setColumn(member.getId(), "exp", "" + memberExp);
 
             event.getChannel().sendMessage(member.getAsMention() + " leveled up to **level " + memberLevel + "**! Congratulations!").queue();
         }

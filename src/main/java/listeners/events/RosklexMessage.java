@@ -1,7 +1,7 @@
-package events;
+package listeners.events;
 
 
-import main.Rosklex;
+import boot.Rosklex;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 

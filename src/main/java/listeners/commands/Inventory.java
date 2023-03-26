@@ -1,17 +1,22 @@
-package commands;
+package listeners.commands;
 
-import events.RosklexMessage;
-import events.SkillFixer;
+import listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import sqlite.Database;
+import database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Date;
 
 public class Inventory extends ListenerAdapter {
+    private DatabaseManager db;
+
+    public Inventory(DatabaseManager db) {
+        this.db = db;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
@@ -143,8 +148,8 @@ public class Inventory extends ListenerAdapter {
             }
 
 
-            eb.addField("", "*Overall boost to stats from items* : +" + SkillFixer.getTotalAttack(member) + " Attack, +" +
-                    "" + SkillFixer.getTotalDefence(member) + " Defence, +" + SkillFixer.getTotalSwiftness(member) + " Swiftness, Total Skill Multiplier x" + getAmuletMuliplier(member), false);
+            eb.addField("", "*Overall boost to stats from items* : +" + getTotalAttack(member) + " Attack, +" +
+                    "" + getTotalDefence(member) + " Defence, +" + getTotalSwiftness(member) + " Swiftness, Total Skill Multiplier x" + getAmuletMuliplier(member), false);
             eb.addField("Use **sell [item]** to sell mine loot, or **sell mine all**", "", false);
 
             eb.setFooter(member.getUser().getName() + "'s inventory", member.getUser().getAvatarUrl());
@@ -152,76 +157,87 @@ public class Inventory extends ListenerAdapter {
 
             event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
-
-
     }
 
 
-    public static int getStick(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "stick"));
+    public int getTotalAttack(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "attack")) / getAmuletMuliplier(member);
     }
 
-    public static int getHammer(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "hammer"));
+    public int getTotalDefence(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "defence")) / getAmuletMuliplier(member);
     }
 
-    public static int getDagger(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "dagger"));
+    public int getTotalSwiftness(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "swiftness")) / getAmuletMuliplier(member);
     }
 
-    public static int getGun(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "gun"));
+
+    public int getStick(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "stick"));
     }
 
-    public static int getMythicalKnife(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "mKnife"));
+    public int getHammer(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "hammer"));
     }
 
-    public static int getMythicalShield(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "mShield"));
+    public int getDagger(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "dagger"));
     }
 
-    public static int getHourglass(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "hourglass"));
+    public int getGun(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "gun"));
     }
 
-    public static int getLegendaryAmulet(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "legAmulet"));
+    public int getMythicalKnife(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "mKnife"));
     }
 
-    public static int getPickDurability(Member member) {
-        return (int) (Integer.parseInt(Database.getDb().getColumn(member.getId(), "pickaxe")));
+    public int getMythicalShield(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "mShield"));
     }
 
-    public static int getJunk(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "gear")) +
-                Integer.parseInt(Database.getDb().getColumn(member.getId(), "wrench")) +
-                Integer.parseInt(Database.getDb().getColumn(member.getId(), "rustyKey")) +
-                Integer.parseInt(Database.getDb().getColumn(member.getId(), "battery"));
+    public int getHourglass(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "hourglass"));
     }
 
-    public static int getMoneyBags(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "moneyBag"));
+    public int getLegendaryAmulet(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "legAmulet"));
     }
 
-    public static int getDiamonds(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "diamond"));
+    public int getPickDurability(Member member) {
+        return (int) (Integer.parseInt(db.getColumn(member.getId(), "pickaxe")));
     }
 
-    public static int getAmuletMuliplier(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "amuletMult"));
+    public int getJunk(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "gear")) +
+                Integer.parseInt(db.getColumn(member.getId(), "wrench")) +
+                Integer.parseInt(db.getColumn(member.getId(), "rustyKey")) +
+                Integer.parseInt(db.getColumn(member.getId(), "battery"));
     }
 
-    public static int getProtectionOrb(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "orb"));
+    public int getMoneyBags(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "moneyBag"));
     }
 
-    public static int getShield(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "shield"));
+    public int getDiamonds(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "diamond"));
     }
 
-    public static int getBoots(Member member) {
-        return Integer.parseInt(Database.getDb().getColumn(member.getId(), "boots"));
+    public int getAmuletMuliplier(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "amuletMult"));
+    }
+
+    public int getProtectionOrb(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "orb"));
+    }
+
+    public int getShield(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "shield"));
+    }
+
+    public int getBoots(Member member) {
+        return Integer.parseInt(db.getColumn(member.getId(), "boots"));
     }
 
 

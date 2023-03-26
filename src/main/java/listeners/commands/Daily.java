@@ -1,17 +1,25 @@
-package commands;
+package listeners.commands;
 
-import events.RosklexMessage;
+import listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import sqlite.Database;
+import database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 
 public class Daily extends ListenerAdapter {
+    private DatabaseManager db;
+    private Profile profile;
+
+    public Daily(DatabaseManager db, Profile profile) {
+        this.db = db;
+        this.profile = profile;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         boolean isRosklexMessage = RosklexMessage.isRosklexMessage(event.getMessage());
@@ -24,7 +32,7 @@ public class Daily extends ListenerAdapter {
         message[0] = message[0].substring(1);
 
         if (message[0].equalsIgnoreCase("daily")) {
-            long lastDaily = Profile.getMemberDaily(member);
+            long lastDaily = profile.getMemberDaily(member);
             Calendar now = Calendar.getInstance();
             Date date = new Date();
 
@@ -33,8 +41,8 @@ public class Daily extends ListenerAdapter {
             eb.setTimestamp(date.toInstant());
             eb.setFooter("Daily Prompt", member.getUser().getAvatarUrl());
 
-            int dailyExp = 100 + Profile.getMemberLevel(member) * 7;
-            int dailyCoins = 150 + Profile.getMemberLevel(member) * 20;
+            int dailyExp = 100 + profile.getMemberLevel(member) * 7;
+            int dailyCoins = 150 + profile.getMemberLevel(member) * 20;
 
             if (message.length == 2 && message[1].equalsIgnoreCase("help")) {
                 eb.setTitle("\uD83D\uDD65 Daily Help");
@@ -56,12 +64,12 @@ public class Daily extends ListenerAdapter {
                 tomorrow.set(Calendar.MILLISECOND, 0);
                 tomorrow.add(Calendar.DAY_OF_YEAR, 1);
 
-                int newExp = Profile.getMemberExp(member) + dailyExp;
-                int newCoins = Profile.getMemberCoins(member) + dailyCoins;
+                int newExp = profile.getMemberExp(member) + dailyExp;
+                int newCoins = profile.getMemberCoins(member) + dailyCoins;
 
-                Database.getDb().setColumn(member.getId(), "lastDaily", "" + tomorrow.getTimeInMillis());
-                Database.getDb().setColumn(member.getId(), "exp", "" + newExp);
-                Database.getDb().setColumn(member.getId(), "coins", "" + newCoins);
+                db.setColumn(member.getId(), "lastDaily", "" + tomorrow.getTimeInMillis());
+                db.setColumn(member.getId(), "exp", "" + newExp);
+                db.setColumn(member.getId(), "coins", "" + newCoins);
 
                 eb.setTitle("\uD83D\uDD65 Daily Reward Claimed");
                 eb.setDescription("You claimed your daily! Added \uD83C\uDF1F **" + dailyExp + "** and \uD83D\uDCB0 **" + dailyCoins + "** to your account.");
@@ -84,8 +92,8 @@ public class Daily extends ListenerAdapter {
         }
     }
 
-    public static boolean dailyAvailable(Member member) {
-        long lastDaily = Profile.getMemberDaily(member);
+    public boolean dailyAvailable(Member member) {
+        long lastDaily = profile.getMemberDaily(member);
 
         Calendar now = Calendar.getInstance();
 

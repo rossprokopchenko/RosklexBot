@@ -1,2 +1,4 @@
 src/main/resources/
 target/
+.idea/
+core-java.iml
