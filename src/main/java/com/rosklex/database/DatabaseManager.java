@@ -1,25 +1,38 @@
-package database;
+package com.rosklex.database;
 
+import com.rosklex.boot.Rosklex;
 import lombok.extern.slf4j.Slf4j;
+import org.sqlite.SQLiteErrorCode;
+import org.sqlite.SQLiteException;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 public class DatabaseManager {
-    private static String url;
+    private static Map<String, String> urlMap;
 
-    public DatabaseManager(String resourcePath, String table) {
-        if (fileExists(resourcePath, table)) {
-            log.info("Successfully loaded database file!");
+    public DatabaseManager(String resourcePath, ArrayList<String> filenames) {
+        urlMap = new HashMap<>();
 
-            this.url = "jdbc:sqlite:" + resourcePath + "/" + table + ".db";
-            selectAll(table, 5);
-        } else {
-            log.error("Could not find database file :(");
+        for (String filename : filenames) {
+            if (!fileExists(resourcePath, filename)) {
+                log.error("Could not find database file :(");
+            }
+            String url = "jdbc:sqlite:" + resourcePath + "/" + filename + ".db";
+
+            log.info("Loaded {} file for url {}.", filename, url);
+            urlMap.put(filename, url);
+
         }
+
+        //dropTable(DatabaseTypes.SERVERS_DB_NAME);
+        //createNewServersDB();
+
+        selectAll(DatabaseTypes.SCORES_DB_NAME, 5);
     }
 
     private boolean fileExists(String resourcePath, String table) {
@@ -32,70 +45,99 @@ public class DatabaseManager {
         return false;
     }
 
-    public void recover(){
-
+    public void recoverScores(){
+        /*
         dropTable("scores");
         createNewTable("scores");
 
-        addColumn("exp", "0");
-        addColumn("coins", "0");
-        addColumn("lastDaily", "0");
-        addColumn("pickaxe", "0");
-        addColumn("stick", "0");
-        addColumn("hammer", "0");
-        addColumn("dagger", "0");
-        addColumn("gun", "0");
-        addColumn("attack", "0");
-        addColumn("defence", "0");
-        addColumn("swiftness", "0");
-        addColumn("dTime", "0");
-        addColumn("dDiff", "0");
-        addColumn("dNotifier", "0");
-        addColumn("dCounter", "0");
-        addColumn("gear", "0");
-        addColumn("wrench", "0");
-        addColumn("rustyKey", "0");
-        addColumn("battery", "0");
-        addColumn("moneyBag", "0");
-        addColumn("diamond", "0");
-        addColumn("mKnife", "0");
-        addColumn("legAmulet","0");
-        addColumn("amuletMult", "1");
-        addColumn("orb", "0");
-        addColumn("shield", "0");
-        addColumn("boots", "0");
-        addColumn("mShield", "0");
-        addColumn("hourglass", "0");
-        addColumn("rank", "0");
-
+        addColumn("exp", "0", "scores");
+        addColumn("coins", "0", "scores");
+        addColumn("lastDaily", "0", "scores");
+        addColumn("pickaxe", "0", "scores");
+        addColumn("stick", "0", "scores");
+        addColumn("hammer", "0", "scores");
+        addColumn("dagger", "0", "scores");
+        addColumn("gun", "0", "scores");
+        addColumn("attack", "0", "scores");
+        addColumn("defence", "0", "scores");
+        addColumn("swiftness", "0", "scores");
+        addColumn("dTime", "0", "scores");
+        addColumn("dDiff", "0", "scores");
+        addColumn("dNotifier", "0", "scores");
+        addColumn("dCounter", "0", "scores");
+        addColumn("gear", "0", "scores");
+        addColumn("wrench", "0", "scores");
+        addColumn("rustyKey", "0", "scores");
+        addColumn("battery", "0", "scores");
+        addColumn("moneyBag", "0", "scores");
+        addColumn("diamond", "0", "scores");
+        addColumn("mKnife", "0", "scores");
+        addColumn("legAmulet","0", "scores");
+        addColumn("amuletMult", "1", "scores");
+        addColumn("orb", "0", "scores");
+        addColumn("shield", "0", "scores");
+        addColumn("boots", "0", "scores");
+        addColumn("mShield", "0", "scores");
+        addColumn("hourglass", "0", "scores");
+        addColumn("rank", "0", "scores");
+        */
         //System.out.println(getTop("level").toString());
+    }
 
+    private void createNewServersDB() {
+        if (tableExists(DatabaseTypes.SERVERS_DB_NAME)) {
+            log.info("Tried to create new servers database table, one already exists.");
+            return;
+        }
+
+        createNewTable(DatabaseTypes.SERVERS_DB_NAME);
+
+        addColumn("requests", "0", DatabaseTypes.SERVERS_DB_NAME);
+        addColumn("users", "0", DatabaseTypes.SERVERS_DB_NAME);
+        addColumn("prefix", "" + Rosklex.getPrefix(), DatabaseTypes.SERVERS_DB_NAME);
     }
 
     /**
      * Connect to a sample database
      * @return
      */
-    private Connection connect() {
+    private Connection connect(String databaseURL) {
         // SQLite connection string
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(databaseURL);
         } catch (SQLException e) {
-            log.error("Error while connecting to url \"{}\"", url, e);
+            log.error("Error while connecting to url \"{}\"", databaseURL, e);
         }
         return conn;
     }
 
+    public boolean tableExists(String tableName){
+        try {
+            String tableExists = String.format("SELECT name FROM sqlite_master WHERE type='table' AND name='%s';", tableName);
+            Statement statement = connect(urlMap.get(tableName)).createStatement();
+            ResultSet ex = statement.executeQuery(tableExists);
+            String exS = ex.getString(1);
+            log.info("Table " + exS + " exists.");
+
+            statement.close();
+            ex.close();
+            return true;
+        }catch (SQLException e){
+            log.info("Table {} does not exist.", tableName);
+            return false;
+        }
+    }
+
     public void newUser(String id, String name) {
         // SQLite connection string
-        String sql = "INSERT INTO scores (" + tableColumns("scores") + ") VALUES(" + tableQuestions("scores") + ")";
+        String sql = "INSERT INTO " + DatabaseTypes.SCORES_DB_NAME + " (" + tableColumns(DatabaseTypes.SCORES_DB_NAME) + ") VALUES(" + tableQuestions(DatabaseTypes.SCORES_DB_NAME) + ")";
 
-        String[] columns = tableColumns("scores").split(",");
+        String[] columns = tableColumns(DatabaseTypes.SCORES_DB_NAME).split(",");
 
 
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(urlMap.get(DatabaseTypes.SCORES_DB_NAME));
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, id);
             pstmt.setString(2, name);
@@ -110,10 +152,29 @@ public class DatabaseManager {
 
             // amulet multiplier set to 1
             pstmt.setString(27, "1");
-
             pstmt.executeUpdate();
+
+            log.info("Registered new user entry in database! ID: {} name: {}", id, name);
         } catch (SQLException e) {
             log.error("Error while registering new user \"{}\" with id \"{}\"", name, id, e);
+        }
+    }
+
+    public void newServer(String id, String name) {
+        // SQLite connection string
+
+        String columns = "id, name";
+        String values = String.format("\'%s\', \'%s\'", id, name);
+
+        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", DatabaseTypes.SERVERS_DB_NAME, columns, values);
+
+        try (Connection conn = DriverManager.getConnection(urlMap.get(DatabaseTypes.SERVERS_DB_NAME));
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.executeUpdate();
+            log.info("Registered new server entry in database! ID: {} name: {}", id, name);
+        } catch (SQLException e) {
+            log.error("Error while registering new server entry \"{}\" with id \"{}\"", name, id, e);
         }
     }
 
@@ -125,49 +186,52 @@ public class DatabaseManager {
         // SQL statement for creating a new table
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s (\n"
                 + "    id text PRIMARY KEY,\n"
-                + "    name text NOT NULL,\n"
-                + "    level integer\n"
+                + "    name text NOT NULL\n"
                 + "); ", table);
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
-            log.info("Successfully created table.");
+            log.info("Successfully created table {}.", table);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void addColumn(String column, String value) {
+    private void addColumn(String column, String value, String table) {
         // SQLite connection string
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
-            stmt.execute("ALTER TABLE scores ADD COLUMN " + column + " text DEFAULT " + value + ";");
-            //stmt.execute("ALTER TABLE scores RENAME TO TempOldTable;");
-            //stmt.execute("CREATE TABLE scores (" + tableColumns("TempOldTable") + ", " + column + " text DEFAULT " + value + ");");
-            //stmt.execute("INSERT INTO scores ("+ tableColumns("TempOldTable") +") SELECT * FROM TempOldTable;");
-            //stmt.execute("DROP TABLE TempOldTable;");
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
+            Statement stmt = conn.createStatement()) {
 
-            log.info("Successfully added column \"{}\" with value \"{}\"", column, value);
+            String command = String.format("ALTER TABLE %s ADD COLUMN %s text DEFAULT \"%s\";", table, column, value);
+
+            stmt.execute(command);
+
+            log.info("Successfully added column \"{}\" with value \"{}\" to table {}", column, value, table);
+
         } catch (SQLException e) {
-            log.error("Error while adding column \"{}\" with value \"{}\"", column, value, e);
+            log.error("Error while adding column \"{}\" with value \"{}\" to table {}", column, value, e, table);
         }
     }
 
-    public String[] getTop(String column, String order){
-        String sql = "SELECT id, " + column + " FROM scores ORDER BY " + column + " " + order + " LIMIT 25";
+    public String[] getTop(String column, String order, String table){
+        String sql = String.format("SELECT id, %s FROM %s ORDER BY %s %s LIMIT 25", column, table, column, order);
+        Statement stmt = null;
 
         Map<String, String> top = new HashMap<>();
 
-        try (Connection conn = this.connect();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table))){
+
+            stmt = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);
 
             // loop through the result set
             while (rs.next()) {
                 top.put(rs.getString("id"), rs.getString(column));
             }
+
+            stmt.close();
         } catch (SQLException e) {
             log.error("Error while getting top 25.", e);
         }
@@ -179,7 +243,7 @@ public class DatabaseManager {
         String sql = "SELECT * FROM " + table + ";";
         String columns = "";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              Statement stmt = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)) {
 
@@ -206,7 +270,7 @@ public class DatabaseManager {
         String sql = "SELECT * FROM " + table + ";";
         String questions = "";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              Statement stmt = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)) {
 
@@ -235,7 +299,7 @@ public class DatabaseManager {
         String sql = String.format("DROP TABLE %s;", table);
         String sql2 = "DROP TABLE TempOldTable;";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              Statement stmt = conn.createStatement()) {
             // drop table
             stmt.execute(sql);
@@ -253,7 +317,7 @@ public class DatabaseManager {
         //int numColumns = columnArray.length;
         int numColumns = cols;
 
-        try (Connection conn = this.connect();
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
@@ -285,13 +349,13 @@ public class DatabaseManager {
         }
     }
 
-    public String getColumn(String id, String column){
+    public String getColumn(String id, String column, String table){
 
-        String sql = "SELECT " + column + " FROM scores WHERE id = ?";
+        String sql = String.format("SELECT %s FROM %s WHERE id = ?", column, table);
 
         String value = "";
 
-        try (Connection conn = this.connect();
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
 
             pstmt.setString(1,id);
@@ -309,12 +373,12 @@ public class DatabaseManager {
         return value;
     }
 
-    public int getRows(){
-        String sql = "SELECT id FROM scores";
+    public int getRows(String table) throws SQLiteException {
+        String sql = String.format("SELECT id FROM %s", table);
 
         int counter = 0;
 
-        try (Connection conn = this.connect();
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
@@ -324,26 +388,29 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             log.error("Error while getting all rows.", e);
+
+            throw new SQLiteException("", SQLiteErrorCode.SQLITE_ERROR);
         }
 
         return counter;
     }
 
-    public void setColumn(String id, String column, String value){
-        String sql = "UPDATE scores SET " + column + " = '" + value + "' WHERE id = " + id + ";";
+    public void setColumn(String id, String column, String value, String table){
+        String sql = String.format("UPDATE %s SET %s = '%s' WHERE id = %s;", table, column, value, id);
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
+
         } catch (SQLException e) {
             log.error("Error while setting id \"{}\" column \"{}\" value \"{}\".", id, column, value, e);
         }
     }
 
-    public void delete(String id) {
-        String sql = "DELETE FROM scores WHERE id = ?";
+    public void delete(String id, String table) {
+        String sql = String.format("DELETE FROM %s WHERE id = ?", table);
 
-        try (Connection conn = this.connect();
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // set the corresponding param
@@ -356,13 +423,12 @@ public class DatabaseManager {
         }
     }
 
-    public boolean exists(String id){
-        String sql = "SELECT id "
-                + "FROM scores WHERE id = ?";
+    public boolean exists(String id, String table){
+        String sql = String.format("SELECT id FROM %s WHERE id = ?", table);
 
         String idCol = "";
 
-        try (Connection conn = this.connect();
+        try (Connection conn = DriverManager.getConnection(urlMap.get(table));
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
 
             pstmt.setString(1,id);

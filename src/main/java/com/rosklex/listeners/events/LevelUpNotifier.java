@@ -1,11 +1,11 @@
-package listeners.events;
+package com.rosklex.listeners.events;
 
-import listeners.commands.Profile;
+import com.rosklex.listeners.commands.Profile;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 import java.awt.*;
 import java.math.BigDecimal;
@@ -16,6 +16,9 @@ import java.util.Date;
 public class LevelUpNotifier extends ListenerAdapter {
     private DatabaseManager db;
     private Profile profile;
+
+    private int memberExp;
+    private int memberLevel;
 
     public LevelUpNotifier(DatabaseManager db, Profile profile) {
         this.db = db;
@@ -33,24 +36,17 @@ public class LevelUpNotifier extends ListenerAdapter {
         message[0] = message[0].substring(1, message[0].length());
 
         Member member = event.getMessage().getMember();
-        int memberExp = profile.getMemberExp(member);
-        int memberLevel = profile.getMemberLevel(member);
 
-        int levelUp = 50 * (int) Math.pow(profile.getMemberLevel(member) - 2, 2) + 150 * (profile.getMemberLevel(member) - 2) + 300;
 
-        if (memberExp >= levelUp) {
-            while (memberExp >= levelUp) {
-                memberLevel++;
-                memberExp -= levelUp;
-            }
-
-            db.setColumn(member.getId(), "level", "" + memberLevel);
-            db.setColumn(member.getId(), "exp", "" + memberExp);
-
+        if (checkForLevelUp(member)) {
             event.getChannel().sendMessage(member.getAsMention() + " leveled up to **level " + memberLevel + "**! Congratulations!").queue();
         }
 
         if (message[0].equalsIgnoreCase("level")) {
+            memberExp = profile.getMemberExp(member);
+            memberLevel = profile.getMemberLevel(member);
+
+            int levelUp = 50 * (int) Math.pow(profile.getMemberLevel(member) - 2, 2) + 150 * (profile.getMemberLevel(member) - 2) + 300;
 
             double progress = round(((double) memberExp / levelUp) * 100, 2);
 
@@ -70,6 +66,8 @@ public class LevelUpNotifier extends ListenerAdapter {
             EmbedBuilder eb = new EmbedBuilder();
 
             if (message.length == 2 && message[1].equalsIgnoreCase("help")) {
+
+
                 String[] totalExp = new String[41];
                 String levelString = "*Level 2-4* ▫ ";
 
@@ -88,8 +86,6 @@ public class LevelUpNotifier extends ListenerAdapter {
                             levelString += "\n*Level " + (i + 2) + "-" + (i + 5) + "* ▫ ";
                         }
                     }
-
-
                 }
 
                 eb.setTitle("\uD83D\uDCC8 Level Ladder");
@@ -102,7 +98,7 @@ public class LevelUpNotifier extends ListenerAdapter {
                 eb.setTimestamp(date.toInstant());
                 eb.setFooter("Level Ladder", member.getUser().getAvatarUrl());
 
-                event.getChannel().sendMessageEmbeds(eb.build()).queue();
+                event.getMessage().replyEmbeds(eb.build()).queue();
                 return;
             } else if (message.length > 1) {
                 event.getChannel().sendMessage("Too many arguments").queue();
@@ -119,9 +115,30 @@ public class LevelUpNotifier extends ListenerAdapter {
             eb.setTimestamp(date.toInstant());
             eb.setFooter(member.getUser().getName() + "'s level stats", member.getUser().getAvatarUrl());
 
-            event.getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getMessage().replyEmbeds(eb.build()).queue();
         }
 
+    }
+
+    public boolean checkForLevelUp(Member member) {
+        memberExp = profile.getMemberExp(member);
+        memberLevel = profile.getMemberLevel(member);
+
+        int levelUp = 50 * (int) Math.pow(profile.getMemberLevel(member) - 2, 2) + 150 * (profile.getMemberLevel(member) - 2) + 300;
+
+        if (memberExp >= levelUp) {
+            while (memberExp >= levelUp) {
+                memberLevel++;
+                memberExp -= levelUp;
+            }
+
+            db.setColumn(member.getId(), "level", "" + memberLevel, "scores");
+            db.setColumn(member.getId(), "exp", "" + memberExp, "scores");
+
+            return true;
+        }
+
+        return false;
     }
 
     public static double round(double value, int places) {

@@ -1,11 +1,11 @@
-package listeners.events;
+package com.rosklex.listeners.events;
 
-import listeners.commands.Inventory;
-import listeners.commands.Store;
+import com.rosklex.listeners.commands.Inventory;
+import com.rosklex.listeners.commands.Store;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 public class SkillFixer extends ListenerAdapter {
     int totalAttack = 0;
@@ -51,8 +51,8 @@ public class SkillFixer extends ListenerAdapter {
     }
 
     private void setSkill(Member member, int attack, int defence, int swiftness) {
-        db.setColumn(member.getId(), "attack", "" + (attack * inventory.getAmuletMuliplier(member)));
-        db.setColumn(member.getId(), "defence", "" + (defence * inventory.getAmuletMuliplier(member)));
-        db.setColumn(member.getId(), "swiftness", "" + (swiftness * inventory.getAmuletMuliplier(member)));
+        db.setColumn(member.getId(), "attack", "" + (attack * inventory.getAmuletMuliplier(member)), "scores");
+        db.setColumn(member.getId(), "defence", "" + (defence * inventory.getAmuletMuliplier(member)), "scores");
+        db.setColumn(member.getId(), "swiftness", "" + (swiftness * inventory.getAmuletMuliplier(member)), "scores");
     }
 }

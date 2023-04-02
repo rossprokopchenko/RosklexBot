@@ -1,4 +1,4 @@
-package config;
+package com.rosklex.config;
 
 import org.json.JSONException;
 import org.json.JSONObject;

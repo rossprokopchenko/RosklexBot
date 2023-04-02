@@ -1,11 +1,11 @@
-package listeners.commands;
+package com.rosklex.listeners.commands;
 
-import listeners.events.RosklexMessage;
+import com.rosklex.listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Date;
@@ -76,44 +76,44 @@ public class Profile extends ListenerAdapter {
 
             eb.setFooter(member.getUser().getName() + "'s profile", member.getUser().getAvatarUrl());
 
-            event.getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getMessage().replyEmbeds(eb.build()).queue();
         }
     }
 
     public int getMemberLevel(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "level"));
+        return Integer.parseInt(db.getColumn(member.getId(), "level", "scores"));
     }
 
     public int getMemberExp(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "exp"));
+        return Integer.parseInt(db.getColumn(member.getId(), "exp", "scores"));
     }
 
     public int getMemberCoins(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "coins"));
+        return Integer.parseInt(db.getColumn(member.getId(), "coins", "scores"));
     }
 
     public long getMemberDaily(Member member) {
-        return Long.parseLong(db.getColumn(member.getId(), "lastDaily"));
+        return Long.parseLong(db.getColumn(member.getId(), "lastDaily", "scores"));
     }
 
     public int getMemberAttack(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "attack"));
+        return Integer.parseInt(db.getColumn(member.getId(), "attack", "scores"));
     }
 
     public int getMemberDefence(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "defence"));
+        return Integer.parseInt(db.getColumn(member.getId(), "defence", "scores"));
     }
 
     public int getMemberSwiftness(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "swiftness"));
+        return Integer.parseInt(db.getColumn(member.getId(), "swiftness", "scores"));
     }
 
     public int getMemberDungeonRuns(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "dCounter"));
+        return Integer.parseInt(db.getColumn(member.getId(), "dCounter", "scores"));
     }
 
     public int getMemberRank(Member member){
-        return Integer.parseInt(db.getColumn(member.getId(), "rank"));
+        return Integer.parseInt(db.getColumn(member.getId(), "rank", "scores"));
     }
 
 }

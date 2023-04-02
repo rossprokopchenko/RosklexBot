@@ -1,4 +1,4 @@
-package config;
+package com.rosklex.config;
 
 import java.io.File;
 import java.io.IOException;

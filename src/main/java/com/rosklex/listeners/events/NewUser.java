@@ -1,8 +1,8 @@
-package listeners.events;
+package com.rosklex.listeners.events;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 public class NewUser extends ListenerAdapter {
     private DatabaseManager db;
@@ -21,13 +21,13 @@ public class NewUser extends ListenerAdapter {
 
         String userId = event.getMessage().getMember().getUser().getId();
         String userName = event.getMessage().getMember().getUser().getName();
-        boolean existsDb = db.exists(userId);
+        boolean existsDb = db.exists(userId, "scores");
 
         if (!existsDb) {
             db.newUser(userId, userName);
 
-            // might remove this line of code (so its not annoying)
-            event.getChannel().sendMessage("New user added to Database!").queue();
+
+            event.getMessage().reply("New user added to Database!").queue();
         }
 
 

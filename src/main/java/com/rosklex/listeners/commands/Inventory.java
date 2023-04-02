@@ -1,11 +1,11 @@
-package listeners.commands;
+package com.rosklex.listeners.commands;
 
-import listeners.events.RosklexMessage;
+import com.rosklex.listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Date;
@@ -49,7 +49,7 @@ public class Inventory extends ListenerAdapter {
 
 
             if (getStick(member) > 0) {
-                weapons += "\uD83E\uDDAF **Walking Stick** x" + getStick(member) + " (" + Store.stickAttack * getStick(member) + " Attack) : Are you blind or something?.\n";
+                weapons += "\uD83E\uDDAF **Walking Stick** x" + getStick(member) + " (" + Store.stickAttack * getStick(member) + " Attack) : Cheap, but is useful!\n";
             }
             if (getHammer(member) > 0) {
                 weapons += "\uD83D\uDD28 **A Handyman's Hammer** x" + getHammer(member) + " (" + Store.hammerAttack * getHammer(member) + " Attack) : You can throw it, or not.\n";
@@ -155,89 +155,89 @@ public class Inventory extends ListenerAdapter {
             eb.setFooter(member.getUser().getName() + "'s inventory", member.getUser().getAvatarUrl());
             eb.setTimestamp(date.toInstant());
 
-            event.getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getMessage().replyEmbeds(eb.build()).queue();
         }
     }
 
 
     public int getTotalAttack(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "attack")) / getAmuletMuliplier(member);
+        return Integer.parseInt(db.getColumn(member.getId(), "attack", "scores")) / getAmuletMuliplier(member);
     }
 
     public int getTotalDefence(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "defence")) / getAmuletMuliplier(member);
+        return Integer.parseInt(db.getColumn(member.getId(), "defence", "scores")) / getAmuletMuliplier(member);
     }
 
     public int getTotalSwiftness(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "swiftness")) / getAmuletMuliplier(member);
+        return Integer.parseInt(db.getColumn(member.getId(), "swiftness", "scores")) / getAmuletMuliplier(member);
     }
 
 
     public int getStick(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "stick"));
+        return Integer.parseInt(db.getColumn(member.getId(), "stick", "scores"));
     }
 
     public int getHammer(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "hammer"));
+        return Integer.parseInt(db.getColumn(member.getId(), "hammer", "scores"));
     }
 
     public int getDagger(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "dagger"));
+        return Integer.parseInt(db.getColumn(member.getId(), "dagger", "scores"));
     }
 
     public int getGun(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "gun"));
+        return Integer.parseInt(db.getColumn(member.getId(), "gun", "scores"));
     }
 
     public int getMythicalKnife(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "mKnife"));
+        return Integer.parseInt(db.getColumn(member.getId(), "mKnife", "scores"));
     }
 
     public int getMythicalShield(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "mShield"));
+        return Integer.parseInt(db.getColumn(member.getId(), "mShield", "scores"));
     }
 
     public int getHourglass(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "hourglass"));
+        return Integer.parseInt(db.getColumn(member.getId(), "hourglass", "scores"));
     }
 
     public int getLegendaryAmulet(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "legAmulet"));
+        return Integer.parseInt(db.getColumn(member.getId(), "legAmulet", "scores"));
     }
 
     public int getPickDurability(Member member) {
-        return (int) (Integer.parseInt(db.getColumn(member.getId(), "pickaxe")));
+        return (int) (Integer.parseInt(db.getColumn(member.getId(), "pickaxe", "scores")));
     }
 
     public int getJunk(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "gear")) +
-                Integer.parseInt(db.getColumn(member.getId(), "wrench")) +
-                Integer.parseInt(db.getColumn(member.getId(), "rustyKey")) +
-                Integer.parseInt(db.getColumn(member.getId(), "battery"));
+        return Integer.parseInt(db.getColumn(member.getId(), "gear", "scores")) +
+                Integer.parseInt(db.getColumn(member.getId(), "wrench", "scores")) +
+                Integer.parseInt(db.getColumn(member.getId(), "rustyKey", "scores")) +
+                Integer.parseInt(db.getColumn(member.getId(), "battery", "scores"));
     }
 
     public int getMoneyBags(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "moneyBag"));
+        return Integer.parseInt(db.getColumn(member.getId(), "moneyBag", "scores"));
     }
 
     public int getDiamonds(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "diamond"));
+        return Integer.parseInt(db.getColumn(member.getId(), "diamond", "scores"));
     }
 
     public int getAmuletMuliplier(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "amuletMult"));
+        return Integer.parseInt(db.getColumn(member.getId(), "amuletMult", "scores"));
     }
 
     public int getProtectionOrb(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "orb"));
+        return Integer.parseInt(db.getColumn(member.getId(), "orb", "scores"));
     }
 
     public int getShield(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "shield"));
+        return Integer.parseInt(db.getColumn(member.getId(), "shield", "scores"));
     }
 
     public int getBoots(Member member) {
-        return Integer.parseInt(db.getColumn(member.getId(), "boots"));
+        return Integer.parseInt(db.getColumn(member.getId(), "boots", "scores"));
     }
 
 

@@ -2,3 +2,5 @@ src/main/resources/
 target/
 .idea/
 core-java.iml
+logs/
+last builds/

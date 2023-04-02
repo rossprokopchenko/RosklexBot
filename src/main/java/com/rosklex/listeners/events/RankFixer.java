@@ -1,9 +1,9 @@
-package listeners.events;
+package com.rosklex.listeners.events;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,14 +27,14 @@ public class RankFixer extends ListenerAdapter {
         String[] message = event.getMessage().getContentRaw().split(" ");
         Member member = event.getMessage().getMember();
 
-        String[] ids = db.getTop("name", "DESC");
+        String[] ids = db.getTop("name", "DESC", "scores");
 
         int size = ids.length;
         Map<String, Integer> totalExpTop = new HashMap<>();
 
         for(int i = 0; i < size; i++){
-            int level = Integer.parseInt(db.getColumn(ids[i], "level"));
-            int exp = Integer.parseInt(db.getColumn(ids[i], "exp"));
+            int level = Integer.parseInt(db.getColumn(ids[i], "level", "scores"));
+            int exp = Integer.parseInt(db.getColumn(ids[i], "exp", "scores"));
             int totalExp = 0;
 
             for(int ii = level; ii > 0; ii--){
@@ -62,6 +62,6 @@ public class RankFixer extends ListenerAdapter {
     }
 
     private void setRank(String id, int rank){
-        db.setColumn(id, "rank", "" + rank);
+        db.setColumn(id, "rank", "" + rank, "scores");
     }
 }

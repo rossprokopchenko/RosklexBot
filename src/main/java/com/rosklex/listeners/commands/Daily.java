@@ -1,11 +1,11 @@
-package listeners.commands;
+package com.rosklex.listeners.commands;
 
-import listeners.events.RosklexMessage;
+import com.rosklex.listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
 
 import java.awt.*;
 import java.util.Calendar;
@@ -46,12 +46,14 @@ public class Daily extends ListenerAdapter {
 
             if (message.length == 2 && message[1].equalsIgnoreCase("help")) {
                 eb.setTitle("\uD83D\uDD65 Daily Help");
-                eb.setDescription(" The daily reward grants you " + dailyExp + " exp and " + dailyCoins + " coins. " +
-                        "Once you claim your daily, your next daily will be available at 12 AM Eastern Standard Time");
-                event.getChannel().sendMessageEmbeds(eb.build()).queue();
+                eb.setDescription(" The daily reward grants you \uD83C\uDF1F **" + dailyExp + "** experience and \uD83D\uDCC0 **" + dailyCoins + "** coins. " +
+                        "Once you claim your daily, your next daily will be available at 12 AM EST.");
+                event.getMessage().replyEmbeds(eb.build()).queue();
                 return;
             } else if (message.length > 1) {
-                event.getChannel().sendMessage("Too many arguments").queue();
+                eb.setTitle("\uD83D\uDD65 Daily Error");
+                eb.setDescription("Too many arguments. Please use **daily** without arguments.");
+                event.getMessage().replyEmbeds(eb.build()).queue();
                 return;
             }
 
@@ -67,12 +69,12 @@ public class Daily extends ListenerAdapter {
                 int newExp = profile.getMemberExp(member) + dailyExp;
                 int newCoins = profile.getMemberCoins(member) + dailyCoins;
 
-                db.setColumn(member.getId(), "lastDaily", "" + tomorrow.getTimeInMillis());
-                db.setColumn(member.getId(), "exp", "" + newExp);
-                db.setColumn(member.getId(), "coins", "" + newCoins);
+                db.setColumn(member.getId(), "lastDaily", "" + tomorrow.getTimeInMillis(), "scores");
+                db.setColumn(member.getId(), "exp", "" + newExp, "scores");
+                db.setColumn(member.getId(), "coins", "" + newCoins, "scores");
 
                 eb.setTitle("\uD83D\uDD65 Daily Reward Claimed");
-                eb.setDescription("You claimed your daily! Added \uD83C\uDF1F **" + dailyExp + "** and \uD83D\uDCB0 **" + dailyCoins + "** to your account.");
+                eb.setDescription("You claimed your daily! \n+ \uD83C\uDF1F **" + dailyExp + "** experience\n+ \uD83D\uDCB0 **" + dailyCoins + "** coins");
             } else {
 
                 long millisLeft = lastDaily - now.getTimeInMillis();
@@ -88,7 +90,7 @@ public class Daily extends ListenerAdapter {
                 eb.setDescription("You already claimed your daily today. Your next daily will be available in " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds.");
             }
 
-            event.getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getMessage().replyEmbeds(eb.build()).queue();
         }
     }
 

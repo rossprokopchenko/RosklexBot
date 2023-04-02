@@ -1,11 +1,12 @@
-package listeners.commands;
+package com.rosklex.listeners.commands;
 
-import listeners.events.RosklexMessage;
+import com.rosklex.listeners.events.RosklexMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import database.DatabaseManager;
+import com.rosklex.database.DatabaseManager;
+import org.sqlite.SQLiteException;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -36,15 +37,15 @@ public class Leaderboard extends ListenerAdapter {
             Color silver = new Color(192,192,192);
             Color bronze = new Color(	205, 127, 50);
 
-            String[] ids = db.getTop("rank", "DESC");
+            String[] ids = db.getTop("rank", "DESC", "scores");
 
 
             int size = ids.length;
             Map<String, Integer> totalExpTop = new HashMap<>();
 
             for(int i = 0; i < size; i++){
-                int level = Integer.parseInt(db.getColumn(ids[i], "level"));
-                int exp = Integer.parseInt(db.getColumn(ids[i], "exp"));
+                int level = Integer.parseInt(db.getColumn(ids[i], "level", "scores"));
+                int exp = Integer.parseInt(db.getColumn(ids[i], "exp", "scores"));
                 int totalExp = 0;
 
                 for(int ii = level; ii > 0; ii--){
@@ -73,10 +74,10 @@ public class Leaderboard extends ListenerAdapter {
             String[] dCounters = new String[size];
 
             for(int i = 0; i < ids.length; i++){
-                names[i] = db.getColumn(ids[i], "name");
-                levels[i] = db.getColumn(ids[i], "level");
-                exps[i] = db.getColumn(ids[i], "exp");
-                dCounters[i] = db.getColumn(ids[i], "dCounter");
+                names[i] = db.getColumn(ids[i], "name", "scores");
+                levels[i] = db.getColumn(ids[i], "level", "scores");
+                exps[i] = db.getColumn(ids[i], "exp", "scores");
+                dCounters[i] = db.getColumn(ids[i], "dCounter", "scores");
             }
 
             // left off where the map is unsorted, need to store name and level in descending sort
@@ -85,7 +86,14 @@ public class Leaderboard extends ListenerAdapter {
             EmbedBuilder eb = new EmbedBuilder();
 
             int start = 0;
-            int numPlayers = db.getRows();
+            int numPlayers = 0;
+
+            try {
+                numPlayers = db.getRows("scores");
+            } catch (SQLiteException e) {
+
+            }
+
 
             eb.setColor(gold);
             eb.setFooter("Leaderboard Page 1", member.getUser().getAvatarUrl());
@@ -125,7 +133,7 @@ public class Leaderboard extends ListenerAdapter {
             eb.setTimestamp(date.toInstant());
             eb.setDescription(leaderboard);
 
-            event.getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getMessage().replyEmbeds(eb.build()).queue();
         }
     }
 }
